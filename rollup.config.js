@@ -21,7 +21,7 @@ export default [
 				format: 'cjs',
 			},
 		],
-		external: ['@koa/router', 'koa', 'reflect-metadata', 'tslib', /^koa\/.*/],
+		external: ['@koa/router', 'koa', 'reflect-metadata', 'reflect-metadata/lite', 'tslib', /^koa\/.*/],
 		plugins: [
 			del({ targets: ['dist/*'] }),
 			resolve({
@@ -51,7 +51,7 @@ export default [
 				format: 'esm',
 			},
 		],
-		external: ['@koa/router', 'koa', 'reflect-metadata', 'tslib', /^koa\/.*/],
+		external: ['@koa/router', 'koa', 'reflect-metadata', 'reflect-metadata/lite', 'tslib', /^koa\/.*/],
 		plugins: [typescript(), dts({ respectExternal: true })],
 	},
 ];
