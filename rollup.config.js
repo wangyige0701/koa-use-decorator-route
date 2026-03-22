@@ -5,10 +5,12 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import del from 'rollup-plugin-delete';
 
+const input = 'src/index.ts';
+
 /** @type {import('rollup').RollupOptions[]} */
 export default [
 	{
-		input: 'src/index.ts',
+		input,
 		output: [
 			{
 				file: input.replace('src/', 'dist/').replace('.ts', '.mjs'),
@@ -19,7 +21,7 @@ export default [
 				format: 'cjs',
 			},
 		],
-		external: ['koa', '@koa/route', 'reflect-metadata'],
+		external: ['@koa/router', 'koa', 'reflect-metadata', 'tslib', /^koa\/.*/],
 		plugins: [
 			del({ targets: ['dist/*'] }),
 			resolve({
@@ -34,7 +36,7 @@ export default [
 		],
 	},
 	{
-		input: 'src/index.ts',
+		input,
 		output: [
 			{
 				file: input.replace('src/', 'dist/').replace('.ts', '.d.mts'),
@@ -49,7 +51,7 @@ export default [
 				format: 'esm',
 			},
 		],
-		external: ['koa', '@koa/route', 'reflect-metadata'],
+		external: ['@koa/router', 'koa', 'reflect-metadata', 'tslib', /^koa\/.*/],
 		plugins: [typescript(), dts({ respectExternal: true })],
 	},
 ];

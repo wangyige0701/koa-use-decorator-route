@@ -1,4 +1,4 @@
-import 'reflect-metadata';
+import 'reflect-metadata/lite';
 
 import type { Middleware } from 'koa';
 import type { ControllerMethod, DecoratorsOptions, ResponseHeaderMetadata, RouteMethods } from './@types';
