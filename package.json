@@ -1,0 +1,23 @@
+{
+	"name": "koa-use-decorator-route",
+	"version": "0.0.1",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"description": "",
+	"devDependencies": {
+		"@types/koa": "^3.0.2",
+		"@types/node": "^25.5.0",
+		"prettier": "^3.8.1",
+		"typescript": "^5.9.3"
+	},
+	"dependencies": {
+		"@koa/router": "^15.4.0",
+		"koa": "^3.1.2",
+		"reflect-metadata": "^0.2.2"
+	}
+}
