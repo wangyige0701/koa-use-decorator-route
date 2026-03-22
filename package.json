@@ -31,6 +31,11 @@
 		"decorator"
 	],
 	"author": "Yige Wang <wyg1776686515@gmail.com>",
+	"homepage": "https://github.com/wangyige0701/koa-use-decorator-route",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/wangyige0701/koa-use-decorator-route.git"
+	},
 	"license": "MIT",
 	"devDependencies": {
 		"@rollup/plugin-commonjs": "^29.0.2",
