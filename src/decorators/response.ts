@@ -1,11 +1,14 @@
 import type { ResponseHeaderMetadata } from '@/@types';
 import { RESPONSE_GLOBAL_HEADER, RESPONSE_HEADER } from '@/config';
-import { HttpMethods } from '@/enum';
+import { Methods } from '@/enum';
 
 /**
  * 响应头装饰器
- * @param header 响应头名称
- * @param value 响应头值
+ *
+ * Response header decorator
+ *
+ * @param header 响应头名称 / Response header name
+ * @param value 响应头值 / Response header value
  */
 export function ResponseHeader(header: string, value: string) {
 	function result(target: any): any;
@@ -33,20 +36,17 @@ export function ResponseHeader(header: string, value: string) {
 
 /**
  * 跨域装饰器
- * @param origin 允许的来源
- * @param headers 允许的请求头
- * @param methods 允许的请求方法
+ *
+ * Cross origin decorator
+ *
+ * @param origin 允许的来源 / Allowed origin
+ * @param headers 允许的请求头 / Allowed request headers
+ * @param methods 允许的请求方法 / Allowed request methods
  */
 export function Cross(
 	origin: string | string[] = '*',
 	headers: string | string[] = ['Content-Type', 'Authorization'],
-	methods: HttpMethods | HttpMethods[] = [
-		HttpMethods.GET,
-		HttpMethods.POST,
-		HttpMethods.PUT,
-		HttpMethods.DELETE,
-		HttpMethods.OPTIONS,
-	],
+	methods: Methods | Methods[] = [Methods.GET, Methods.POST, Methods.PUT, Methods.DELETE, Methods.OPTIONS],
 ) {
 	if (typeof origin === 'string') {
 		origin = [origin];

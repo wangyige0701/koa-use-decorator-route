@@ -1,7 +1,7 @@
 import type Koa from 'koa';
 import type { ControllerMethod, ExposeMethods, InjectMetadata } from '@/@types';
 import { INJECT, ROUTES } from '@/config';
-import { HttpMethods, Types } from '@/enum';
+import { Methods, Types } from '@/enum';
 
 const TypeMapFunction = {
 	[Types.Int]: (param: string) => parseInt(param, 10) || 0,
@@ -10,7 +10,7 @@ const TypeMapFunction = {
 	[Types.Boolean]: (param: string) => param === 'true',
 };
 
-function Action(path: string, method: HttpMethods) {
+function Action(path: string, method: Methods) {
 	return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
 		const routes = Reflect.getMetadata(ROUTES, target.constructor) || ([] as ControllerMethod[]);
 
@@ -59,7 +59,7 @@ type HttpMethodFunc = (path: string) => ReturnType<typeof Action>;
 
 export const HttpMethod = methods.reduce(
 	(prev, curr) => {
-		prev[curr] = (path: string) => Action(path, HttpMethods[curr.toUpperCase() as keyof typeof HttpMethods]);
+		prev[curr] = (path: string) => Action(path, Methods[curr.toUpperCase() as keyof typeof Methods]);
 		return prev;
 	},
 	{} as Record<ExposeMethods, HttpMethodFunc>,

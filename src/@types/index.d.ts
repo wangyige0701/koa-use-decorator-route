@@ -1,17 +1,24 @@
 import type { AllowedMethodsOptions } from '@koa/router';
-import type { HttpMethods, Types } from '@/enum';
+import type { Methods, Types } from '@/enum';
 
 export interface DecoratorsOptions {
 	/**
 	 * 控制器目录绝对路径
+	 *
+	 * Controller directory absolute path
 	 */
 	controllerDir: string;
+	/**
+	 * 允许的请求方法，可以传 `@koa/router` 的 `allowedMethods` 参数
+	 *
+	 * Allowed request methods
+	 */
 	allowedMethods?: boolean | AllowedMethodsOptions;
 }
 
 export interface ControllerMethod {
 	path: string;
-	method: HttpMethods;
+	method: Methods;
 	handler: string;
 }
 

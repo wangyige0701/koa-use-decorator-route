@@ -51,7 +51,11 @@ export function decorator(options: DecoratorsOptions): Middleware {
 						const responseHeaderGlobal = (Reflect.getMetadata(RESPONSE_GLOBAL_HEADER, controllerClass) ||
 							[]) as ResponseHeaderMetadata[];
 
-						for (const header of [...responseHeaderGlobal, ...responseHeaders]) {
+						// 合并全局响应头和方法响应头，去重
+						const _global = responseHeaderGlobal.filter(
+							(item) => !responseHeaders.find((header) => header.header === item.header),
+						);
+						for (const header of [..._global, ...responseHeaders]) {
 							ctx.set(header.header, header.value);
 						}
 
@@ -83,4 +87,4 @@ export * from '@/decorators/action';
 export * from '@/decorators/response';
 export * from '@/decorators/controller';
 export * from '@/decorators/inject';
-export * from './enum';
+export { Types, Methods } from './enum';
