@@ -4,12 +4,13 @@ import type { Middleware } from 'koa';
 import type { ControllerMethod, DecoratorsOptions, ResponseHeaderMetadata, RouteMethods } from './@types';
 import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import Router from '@koa/router';
 import { CONTROLLER, RESPONSE_GLOBAL_HEADER, RESPONSE_HEADER, ROUTES, SINGLETON } from './config';
 
 const route = new Router();
 
-export function useDecoratorRoute(options: DecoratorsOptions): Middleware {
+export function decorator(options: DecoratorsOptions): Middleware {
 	return async (ctx, next) => {
 		const { controllerDir, allowedMethods } = options || {};
 		if (!controllerDir) {
@@ -26,7 +27,8 @@ export function useDecoratorRoute(options: DecoratorsOptions): Middleware {
 				continue;
 			}
 
-			const controller = require(path.resolve(controllerDir, file)) as Record<string, any>;
+			const fileUrl = pathToFileURL(path.resolve(controllerDir, file)).href;
+			const controller = (await import(fileUrl)) as Record<string, any>;
 			for (const controllerClass of Object.values(controller)) {
 				const controllerPath = Reflect.getMetadata(CONTROLLER, controllerClass) as string;
 				if (typeof controllerPath !== 'string' || !controllerPath) {
@@ -36,10 +38,10 @@ export function useDecoratorRoute(options: DecoratorsOptions): Middleware {
 				const routes = (Reflect.getMetadata(ROUTES, controllerClass) || []) as ControllerMethod[];
 				for (const routeItem of routes) {
 					// 只在设置 route 时重写一次函数体，避免嵌套过多
-					const path =
-						(controllerPath.endsWith('/') ? controllerPath.slice(0, -1) : controllerPath) +
-						(!routeItem.path.startsWith('/') ? '/' : '') +
-						routeItem.path;
+					const _base = controllerPath.endsWith('/') ? controllerPath.slice(0, -1) : controllerPath;
+					const _path = !routeItem.path.startsWith('/') ? '/' : '' + routeItem.path;
+					// 保证
+					const path = _base + (_path === '/' ? '' : _path);
 					const method = routeItem.method.toLowerCase() as RouteMethods;
 					const handler = routeItem.handler;
 

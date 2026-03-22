@@ -16,7 +16,7 @@ function Action(path: string, method: HttpMethods) {
 
 		const oldValue = descriptor.value;
 		descriptor.value = async (ctx: Koa.Context) => {
-			const injects = Reflect.getMetadata(INJECT, target.constructor, propertyKey) as InjectMetadata[];
+			const injects = (Reflect.getMetadata(INJECT, target.constructor, propertyKey) || []) as InjectMetadata[];
 
 			// 整理传入参数
 			const params = ctx.params;
@@ -53,7 +53,7 @@ function Action(path: string, method: HttpMethods) {
 	};
 }
 
-const methods = ['Get', 'Post', 'Put', 'Delete', 'Options'] as ExposeMethods[];
+const methods = ['Get', 'Post', 'Put', 'Delete', 'Options', 'Head'] as ExposeMethods[];
 
 type HttpMethodFunc = (path: string) => ReturnType<typeof Action>;
 

@@ -27,6 +27,6 @@ export interface ResponseHeaderMetadata {
 	value: string;
 }
 
-export type RouteMethods = 'get' | 'post' | 'put' | 'delete' | 'options';
+export type RouteMethods = 'all' | 'get' | 'post' | 'put' | 'delete' | 'options' | 'head';
 
 export type ExposeMethods = Capitalize<RouteMethods>;

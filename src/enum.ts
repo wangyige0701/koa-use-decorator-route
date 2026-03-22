@@ -1,9 +1,11 @@
 export enum HttpMethods {
+	ALL = 'ALL',
 	GET = 'GET',
 	POST = 'POST',
 	PUT = 'PUT',
 	DELETE = 'DELETE',
 	OPTIONS = 'OPTIONS',
+	HEAD = 'HEAD',
 }
 
 export enum Types {
