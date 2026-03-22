@@ -1,0 +1,65 @@
+import { describe, expect, it } from 'vitest';
+import request from 'supertest';
+import Koa from 'koa';
+import path from 'node:path';
+import { decorator } from '@/index';
+import { fileURLToPath } from 'node:url';
+
+describe('Controller', () => {
+	const app = new Koa();
+	app.use(
+		decorator({
+			controllerDir: path.resolve(path.dirname(fileURLToPath(import.meta.url)), './controller'),
+			allowedMethods: true,
+		}),
+	);
+
+	it('should return get', async () => {
+		const res = await request(app.callback()).get('/index/get');
+		expect(res.text).toBe('get');
+		expect(res.status).toBe(200);
+	});
+
+	it('should return post', async () => {
+		const res = await request(app.callback()).post('/index/post');
+		expect(res.text).toBe('post');
+		expect(res.status).toBe(200);
+	});
+
+	it('should return put', async () => {
+		const res = await request(app.callback()).put('/index/put');
+		expect(res.text).toBe('put');
+		expect(res.status).toBe(200);
+	});
+
+	it('should return delete', async () => {
+		const res = await request(app.callback()).delete('/index/delete');
+		expect(res.text).toBe('delete');
+		expect(res.status).toBe(200);
+	});
+
+	it('should return int', async () => {
+		const res = await request(app.callback()).get('/index/int/123');
+		expect(res.text).toBe('123');
+		expect(res.status).toBe(200);
+	});
+
+	it('should return boolean', async () => {
+		const res = await request(app.callback()).get('/index/boolean/true');
+		expect(res.text).toBe('true');
+		expect(res.status).toBe(200);
+	});
+
+	it('should return headers', async () => {
+		const res = await request(app.callback()).get('/index/headers');
+		expect(res.text).toBe('headers');
+		expect(res.status).toBe(200);
+		expect(res.headers['x-header']).toBe('Value');
+	});
+
+	it('should return query', async () => {
+		const res = await request(app.callback()).get('/index/query/key?key=123');
+		expect(res.text).toBe('123');
+		expect(res.status).toBe(200);
+	});
+});
