@@ -16,6 +16,7 @@ class IFDecorator {
 		if (this.condition) {
 			return this;
 		}
+		this.condition = true;
 		this.assertDecorator(decorator);
 		return this;
 	}
