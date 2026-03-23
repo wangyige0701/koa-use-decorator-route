@@ -37,3 +37,5 @@ export interface ResponseHeaderMetadata {
 export type RouteMethods = 'all' | 'get' | 'post' | 'put' | 'delete' | 'options' | 'head';
 
 export type ExposeMethods = Capitalize<RouteMethods>;
+
+export type Decorator = (target: any, propertyKey?: string, descriptor?: PropertyDescriptor | number) => any;

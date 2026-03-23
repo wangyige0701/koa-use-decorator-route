@@ -62,4 +62,10 @@ describe('Controller', () => {
 		expect(res.text).toBe('123');
 		expect(res.status).toBe(200);
 	});
+
+	it('should return override', async () => {
+		const res = await request(app.callback()).get('/index/override');
+		expect(res.text).toBe('override');
+		expect(res.status).toBe(200);
+	});
 });

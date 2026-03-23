@@ -1,6 +1,6 @@
 import type Koa from 'koa';
 import { HttpMethod } from '@/decorators/action';
-import { Controller } from '@/decorators/controller';
+import { Controller, ControllerBasePathOverride } from '@/decorators/controller';
 import { Context, Inject } from '@/decorators/inject';
 import { ResponseHeader } from '@/decorators/response';
 import { Types } from '@/enum';
@@ -46,5 +46,11 @@ export class IndexController {
 	@HttpMethod.Get('/query/:key')
 	query(@Context() ctx: Koa.Context, @Inject('key', Types.String) key: string) {
 		return ctx.query[key];
+	}
+
+	@ControllerBasePathOverride()
+	@HttpMethod.Get('/override')
+	override() {
+		return 'override';
 	}
 }
