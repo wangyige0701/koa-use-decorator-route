@@ -8,9 +8,9 @@ import { pathToFileURL } from 'node:url';
 import Router from '@koa/router';
 import { CONTROLLER, RESPONSE_GLOBAL_HEADER, RESPONSE_HEADER, ROUTE_OVERRIDE, ROUTES, SINGLETON } from './config';
 
-const route = new Router();
-
 export function decorator(options: DecoratorsOptions): Middleware {
+	const route = new Router();
+
 	return async (ctx, next) => {
 		const { controllerDir, allowedMethods } = options || {};
 		if (!controllerDir) {

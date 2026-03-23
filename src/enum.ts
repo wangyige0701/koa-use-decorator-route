@@ -6,6 +6,7 @@ export enum Methods {
 	DELETE = 'DELETE',
 	OPTIONS = 'OPTIONS',
 	HEAD = 'HEAD',
+	PATCH = 'PATCH',
 }
 
 export enum Types {
