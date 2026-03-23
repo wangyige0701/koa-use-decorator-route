@@ -67,6 +67,7 @@ import { Singleton, Controller, HttpMethod, Context } from 'koa-use-decorator-ro
 export class HomeController {
 	@HttpMethod.Get('/')
 	async index(@Context() ctx: Koa.Context) {
+		console.log(ctx.query);
 		return 'Hello World!';
 	}
 }
@@ -103,13 +104,17 @@ export class HomeController {
 
 ### 响应头示例 / Response Header Example
 
+#### `ResponseHeader` 装饰器用于设置响应头，第一个参数是响应头名称，第二个参数是响应头值
+
+#### `ResponseHeader` decorator is used to set response headers, the first parameter is the response header name, the second parameter is the response header value
+
 #### 提供一个 `Cross` 装饰器，用于处理跨域请求，可作用于控制器或成员函数上
 
 #### Provide a `Cross` decorator to handle cross-origin requests, which can be used on the controller or member function
 
 ```ts
 import type Koa from 'koa';
-import { Controller, HttpMethod, ResponseHeader, Methods } from 'koa-use-decorator-route';
+import { Controller, HttpMethod, ResponseHeader, Methods, Cross } from 'koa-use-decorator-route';
 
 @Controller('/home')
 @Cross()
@@ -124,6 +129,25 @@ export class HomeController {
 	@Cross('http://localhost:3000', ['Content-Type', 'Authorization'], [Methods.GET])
 	async cross() {
 		return 'Hello Cross!';
+	}
+}
+```
+
+### 条件装饰器 / Conditional Decorator
+
+#### `IF` 装饰器可以根据条件判断应用不同的装饰器，必须要链式调用 `ENDIF` 结束
+
+#### `IF` decorator can be used to apply different decorators based on the condition, must be chained with `ENDIF`
+
+```ts
+import type Koa from 'koa';
+import { Controller, HttpMethod, IF } from 'koa-use-decorator-route';
+
+@IF(false, @Controller('/if-not')).ELIF(false, @Controller('/elif')).ELSE(@Controller('/else')).ENDIF()
+export class HomeController {
+	@HttpMethod.Get('/')
+	async index() {
+		return 'Hello World!';
 	}
 }
 ```
