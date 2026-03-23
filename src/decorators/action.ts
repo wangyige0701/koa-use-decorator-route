@@ -53,7 +53,9 @@ function Action(path: string, method: Methods) {
 	};
 }
 
-const methods = ['Get', 'Post', 'Put', 'Delete', 'Options', 'Head'] as ExposeMethods[];
+const methods = Object.values(Methods).map(
+	(item) => item.slice(0, 1).toUpperCase() + item.slice(1).toLowerCase(),
+) as unknown as ExposeMethods[];
 
 type HttpMethodFunc = (path: string) => ReturnType<typeof Action>;
 
