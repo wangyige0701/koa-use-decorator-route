@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import Router from '@koa/router';
-import { CONTROLLER, RESPONSE_GLOBAL_HEADER, RESPONSE_HEADER, ROUTES, SINGLETON } from './config';
+import { CONTROLLER, RESPONSE_GLOBAL_HEADER, RESPONSE_HEADER, ROUTE_OVERRIDE, ROUTES, SINGLETON } from './config';
 
 const route = new Router();
 
@@ -30,15 +30,23 @@ export function decorator(options: DecoratorsOptions): Middleware {
 			const fileUrl = pathToFileURL(path.resolve(controllerDir, file)).href;
 			const controller = (await import(fileUrl)) as Record<string, any>;
 			for (const controllerClass of Object.values(controller)) {
+				// 一定要包含 Controller 装饰器声明
 				const controllerPath = Reflect.getMetadata(CONTROLLER, controllerClass) as string;
 				if (typeof controllerPath !== 'string' || !controllerPath) {
 					continue;
 				}
 
+				// 是否覆写控制器基础路径
+				const isOverrideControllerPath = Reflect.getMetadata(ROUTE_OVERRIDE, controllerClass) || false;
 				const routes = (Reflect.getMetadata(ROUTES, controllerClass) || []) as ControllerMethod[];
 				for (const routeItem of routes) {
 					// 只在设置 route 时重写一次函数体，避免嵌套过多
-					const _base = controllerPath.endsWith('/') ? controllerPath.slice(0, -1) : controllerPath;
+					// 覆写控制器基础路径时，将 base 设置为根路径
+					const _base = isOverrideControllerPath
+						? '/'
+						: controllerPath.endsWith('/')
+							? controllerPath.slice(0, -1)
+							: controllerPath;
 					const _path = !routeItem.path.startsWith('/') ? '/' : '' + routeItem.path;
 					// 保证
 					const path = _base + (_path === '/' ? '' : _path);
@@ -87,4 +95,6 @@ export * from '@/decorators/action';
 export * from '@/decorators/response';
 export * from '@/decorators/controller';
 export * from '@/decorators/inject';
+export * from '@/decorators/if';
+
 export { Types, Methods } from './enum';
