@@ -58,22 +58,28 @@ export function Cross(
 		methods = [methods];
 	}
 
-	const originHeader = ResponseHeader('Access-Control-Allow-Origin', origin.join(','));
-	const headerHeader = ResponseHeader('Access-Control-Allow-Headers', headers.join(','));
-	const methodHeader = ResponseHeader('Access-Control-Allow-Methods', methods.join(','));
+	const originHeader = Array.isArray(origin)
+		? ResponseHeader('Access-Control-Allow-Origin', origin.join(','))
+		: void 0;
+	const headerHeader = Array.isArray(headers)
+		? ResponseHeader('Access-Control-Allow-Headers', headers.join(','))
+		: void 0;
+	const methodHeader = Array.isArray(methods)
+		? ResponseHeader('Access-Control-Allow-Methods', methods.join(','))
+		: void 0;
 
 	function result(target: any): any;
 	function result(target: any, propertyKey: string, descriptor: PropertyDescriptor): PropertyDescriptor;
 	function result(target: any, propertyKey?: string, descriptor?: PropertyDescriptor) {
 		if (propertyKey) {
-			originHeader(target, propertyKey, descriptor!);
-			headerHeader(target, propertyKey, descriptor!);
-			methodHeader(target, propertyKey, descriptor!);
+			originHeader && originHeader(target, propertyKey, descriptor!);
+			headerHeader && headerHeader(target, propertyKey, descriptor!);
+			methodHeader && methodHeader(target, propertyKey, descriptor!);
 			return descriptor;
 		}
-		originHeader(target);
-		headerHeader(target);
-		methodHeader(target);
+		originHeader && originHeader(target);
+		headerHeader && headerHeader(target);
+		methodHeader && methodHeader(target);
 		return target;
 	}
 	return result;

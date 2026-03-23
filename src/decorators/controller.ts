@@ -1,4 +1,4 @@
-import { CONTROLLER, SINGLETON } from '@/config';
+import { CONTROLLER, ROUTE_OVERRIDE, SINGLETON } from '@/config';
 
 /**
  * 控制器装饰器
@@ -25,5 +25,17 @@ export function Singleton(...params: any[]) {
 			Reflect.defineMetadata(SINGLETON, new target(...params), target);
 		}
 		return target;
+	};
+}
+
+/**
+ * 控制器基础路径覆写装饰器，可以使指定路由的路径不包含控制器基础路径
+ *
+ * Controller base path override decorator, can make the route path not contain the controller base path
+ */
+export function ControllerBasePathOverride() {
+	return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+		Reflect.defineMetadata(ROUTE_OVERRIDE, true, target.constructor, propertyKey);
+		return descriptor;
 	};
 }
