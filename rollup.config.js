@@ -4,6 +4,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import del from 'rollup-plugin-delete';
+import tsconfigPaths from 'rollup-plugin-tsconfig-paths';
 
 const input = 'src/index.ts';
 
@@ -24,6 +25,7 @@ export default [
 		external: ['@koa/router', 'koa', 'reflect-metadata', 'reflect-metadata/lite', 'tslib', /^koa\/.*/],
 		plugins: [
 			del({ targets: ['dist/*'] }),
+			tsconfigPaths(),
 			resolve({
 				preferBuiltins: true,
 				rootDir: 'src',
@@ -52,6 +54,6 @@ export default [
 			},
 		],
 		external: ['@koa/router', 'koa', 'reflect-metadata', 'reflect-metadata/lite', 'tslib', /^koa\/.*/],
-		plugins: [typescript(), dts({ respectExternal: true })],
+		plugins: [tsconfigPaths(), typescript(), dts({ respectExternal: true })],
 	},
 ];

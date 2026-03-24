@@ -47,6 +47,7 @@
 		"rollup-plugin-delete": "^3.0.2",
 		"rollup-plugin-dts": "^6.4.1",
 		"rollup-plugin-esbuild": "^6.2.1",
+		"rollup-plugin-tsconfig-paths": "^1.5.2",
 		"rollup-plugin-typescript2": "^0.36.0",
 		"supertest": "^7.2.2",
 		"tslib": "^2.8.1",
@@ -59,8 +60,8 @@
 		"reflect-metadata": "^0.2.2"
 	},
 	"peerDependencies": {
-		"koa": ">=2.0.0",
 		"@koa/router": ">=8.0.0",
+		"koa": ">=2.0.0",
 		"reflect-metadata": "^0.2.0"
 	},
 	"packageManager": "pnpm@9.1.0"
