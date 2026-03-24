@@ -33,7 +33,7 @@
 	"homepage": "https://github.com/wangyige0701/koa-use-decorator-route",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/wangyige0701/koa-use-decorator-route.git"
+		"url": "git+https://github.com/wangyige0701/koa-use-decorator-route.git"
 	},
 	"license": "MIT",
 	"devDependencies": {
