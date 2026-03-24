@@ -1,10 +1,11 @@
 import type Koa from 'koa';
 import { HttpMethod } from '@/decorators/action';
-import { Controller, ControllerBasePathOverride } from '@/decorators/controller';
+import { Controller, ControllerBasePathOverride, Singleton } from '@/decorators/controller';
 import { Context, Inject } from '@/decorators/inject';
 import { ResponseHeader } from '@/decorators/response';
 import { Types } from '@/enum';
 
+@Singleton()
 @Controller('/index')
 export class IndexController {
 	@HttpMethod.Get('/get')
