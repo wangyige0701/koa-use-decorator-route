@@ -15,7 +15,7 @@ function Action(path: string, method: Methods) {
 		const routes = Reflect.getMetadata(ROUTES, target.constructor) || ([] as ControllerMethod[]);
 
 		const oldValue = descriptor.value;
-		descriptor.value = async (ctx: Koa.Context) => {
+		descriptor.value = async function (ctx: Koa.Context) {
 			const injects = (Reflect.getMetadata(INJECT, target.constructor, propertyKey) || []) as InjectMetadata[];
 
 			// 整理传入参数
@@ -38,7 +38,7 @@ function Action(path: string, method: Methods) {
 				injectParams[inject.parameterIndex] = param;
 			}
 
-			return await oldValue(...injectParams);
+			return await oldValue.apply(this, injectParams);
 		};
 
 		routes.push({
