@@ -1,10 +1,14 @@
 # 基于 koa 和 @koa/router 的装饰器路由中间件
 
-## A Koa plugin for @koa/router that allows you to use decorators to define routes
+## A Koa plugin for @koa/router that allows you to use decorators to define routes.
 
-> 依赖 `koa` `@koa/router` `reflect-metadata`
+> 依赖 `koa`、`@koa/router`、`reflect-metadata`
 
-> Depend on `koa` `@koa/router` `reflect-metadata`
+> Requires `koa`, `@koa/router`, and `reflect-metadata`.
+
+### 提供基于 Koa 的装饰器路由，使路由定义更简洁以及更易读。
+
+### Provides decorator-based routing for Koa, making route definitions cleaner and more readable.
 
 ## 安装 / Install
 
@@ -16,11 +20,11 @@ npm install koa-use-decorator-route
 
 > 目录下的控制器文件名必须以 `Controller` 结尾
 
-> The file name of the controller must end with `Controller`
+> The controller file name must end with `Controller`.
 
 > 目录下的控制器文件必须导出一个被 `@Controller` 装饰器装饰的类
 
-> The controller file must export a class decorated with `@Controller` decorator
+> The controller file must export a class decorated with `@Controller`.
 
 - ### 声明 / Declaration
 
@@ -62,11 +66,11 @@ app.use(
 
 #### 成员函数返回的数据会作为响应体返回
 
-#### Return the return value of the member function as the response body
+#### The return value of the member function will be used as the response body.
 
 #### 成员函数可以使用 `@Context` 注入 `Koa.Context` 类型的参数
 
-#### The member function can use `@Context` to inject `Koa.Context` type parameter
+#### The member function can use `@Context` to inject a `Koa.Context` object.
 
 ```ts
 import type Koa from 'koa';
@@ -85,9 +89,9 @@ export class HomeController {
 
 - ### 参数注入示例 / Parameter Injection Example
 
-#### `Inject` 装饰器第二个参数可以是一个枚举值，也可以是一个函数
+#### `@Inject` 装饰器第二个参数可以是一个枚举值，也可以是一个函数
 
-#### `Inject` decorator second parameter can be an enum value or a function
+#### `@Inject` decorator second parameter can be an enum value or a function.
 
 ```ts
 import type Koa from 'koa';
@@ -114,13 +118,13 @@ export class HomeController {
 
 - ### 响应头示例 / Response Header Example
 
-#### `ResponseHeader` 装饰器用于设置响应头，第一个参数是响应头名称，第二个参数是响应头值
+#### `@ResponseHeader` 装饰器用于设置响应头，第一个参数是响应头名称，第二个参数是响应头值
 
-#### `ResponseHeader` decorator is used to set response headers, the first parameter is the response header name, the second parameter is the response header value
+#### The `@ResponseHeader` decorator is used to set response headers. The first parameter specifies the header name, and the second parameter specifies the header value.
 
-#### 提供一个 `Cross` 装饰器，用于处理跨域请求，可作用于控制器或成员函数上
+#### 提供一个 `@Cross` 装饰器，用于处理跨域请求，可作用于控制器或成员函数上
 
-#### Provide a `Cross` decorator to handle cross-origin requests, which can be used on the controller or member function
+#### The `@Cross` decorator handles cross-origin requests, and can be applied to controllers or individual member functions.
 
 ```ts
 import type Koa from 'koa';
@@ -145,9 +149,9 @@ export class HomeController {
 
 - ### 条件装饰器 / Conditional Decorator (>= 0.1.0)
 
-#### `IF` 装饰器可以根据条件判断应用不同的装饰器，必须要链式调用 `ENDIF` 结束
+#### `@IF` 装饰器可以根据条件判断应用不同的装饰器，必须要链式调用 `ENDIF` 结束
 
-#### `IF` decorator can be used to apply different decorators based on a condition, and must be terminated by chaining a call to `ENDIF`
+#### The `@IF` decorator allows applying different decorators based on a condition, and must be concluded by chaining a call to `ENDIF`.
 
 ```ts
 import type Koa from 'koa';
@@ -164,9 +168,9 @@ export class HomeController {
 
 - ### 成员属性注入 / Member Property Injection (>= 0.1.0)
 
-#### 可以通过传递构造函数给 `Inject` 装饰器来注入成员属性，或者在 ts 中通过类型反射来注入
+#### 可以通过传递构造函数给 `@Inject` 装饰器来注入成员属性，或者在 ts 中通过类型反射来注入
 
-#### You can inject member properties by passing the class function to the `Inject` decorator, or by using type reflection in ts to inject
+#### You can inject member properties by passing the class constructor to the `@Inject` decorator, or by using TypeScript's type reflection.
 
 ```ts
 // HomeController.ts
@@ -177,8 +181,8 @@ import { HomeService2 } from '@/service/HomeService';
 
 @Controller('/home')
 export class HomeController {
-	// 如果不用非空断言，则 `tsconfig.json` 中必须开启 `strictPropertyInitialization`
-	// If not using non-null assertion, then `tsconfig.json` must enable `strictPropertyInitialization`
+	// 如果不用非空断言 (!)，则 `tsconfig.json` 中必须开启 `strictPropertyInitialization`
+	// If you do not use the non-null assertion operator (!), you must enable `strictPropertyInitialization` in `tsconfig.json`.
 	@Inject()
 	service!: HomeService;
 
