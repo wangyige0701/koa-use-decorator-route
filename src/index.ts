@@ -23,7 +23,7 @@ export function decorator(options: DecoratorsOptions): Middleware {
 
 		const files = fs.readdirSync(controllerDir);
 		for (const file of files) {
-			if (!file.endsWith('Controller.ts') && !file.endsWith('Controller.js')) {
+			if (!/^[\w]+Controller\.(m|c)?(js|ts)$/.test(file)) {
 				continue;
 			}
 
