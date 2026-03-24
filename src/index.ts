@@ -67,6 +67,11 @@ export function decorator(options: DecoratorsOptions): Middleware {
 					const method = routeItem.method.toLowerCase() as RouteMethods;
 					const handler = routeItem.handler;
 
+					// 单例成员注入属性
+					if (Reflect.hasMetadata(SINGLETON, controllerClass)) {
+						toInjectMethodMetadata<any>(controllerClass, Reflect.getMetadata(SINGLETON, controllerClass));
+					}
+
 					route[method](path, async (ctx) => {
 						const responseHeaders = (Reflect.getMetadata(RESPONSE_HEADER, controllerClass, handler) ||
 							[]) as ResponseHeaderMetadata[];
@@ -83,10 +88,7 @@ export function decorator(options: DecoratorsOptions): Middleware {
 
 						// 单例判断
 						if (Reflect.hasMetadata(SINGLETON, controllerClass)) {
-							const singleton = toInjectMethodMetadata<any>(
-								controllerClass,
-								Reflect.getMetadata(SINGLETON, controllerClass),
-							);
+							const singleton = Reflect.getMetadata(SINGLETON, controllerClass);
 							ctx.body = await singleton[handler].call(singleton, ctx);
 						} else {
 							const instance = toInjectMethodMetadata<any>(controllerClass, new controllerClass());
@@ -127,6 +129,7 @@ function toInjectMethodMetadata<T extends Object>(cls: Function, instance: T): T
 		if (typeof inject !== 'function') {
 			continue;
 		}
+		// 注入的实例判断是否设置了单例装饰器
 		if (Reflect.hasMetadata(SINGLETON, inject)) {
 			instance[propertyKey as keyof typeof instance] = Reflect.getMetadata(SINGLETON, inject);
 		} else {
