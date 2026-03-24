@@ -6,6 +6,8 @@ export interface DecoratorsOptions {
 	 * 控制器目录绝对路径
 	 *
 	 * Controller directory absolute path
+	 *
+	 * TODO: 考虑支持多个目录导入，不只包含控制器目录
 	 */
 	controllerDir: string;
 	/**
