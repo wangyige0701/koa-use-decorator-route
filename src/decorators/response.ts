@@ -29,6 +29,7 @@ export function ResponseHeader(header: string, value: string) {
 		const responseHeader = (Reflect.getMetadata(RESPONSE_GLOBAL_HEADER, target) || []) as ResponseHeaderMetadata[];
 		responseHeader.push(data);
 		Reflect.defineMetadata(RESPONSE_GLOBAL_HEADER, responseHeader, target);
+
 		return target;
 	}
 	return result;

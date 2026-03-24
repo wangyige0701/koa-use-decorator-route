@@ -45,4 +45,4 @@ export type RouteMethods = Lowercase<keyof typeof Methods>;
 
 export type ExposeMethods = Capitalize<RouteMethods>;
 
-export type Decorator = (target: any, propertyKey?: string | symbol, descriptor?: PropertyDescriptor | number) => any;
+export type Decorator = ClassDecorator | PropertyDecorator | MethodDecorator | ParameterDecorator;

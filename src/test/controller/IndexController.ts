@@ -54,4 +54,12 @@ export class IndexController {
 	override() {
 		return 'override';
 	}
+
+	@HttpMethod.Get('/object')
+	object() {
+		return {
+			name: 'test',
+			age: 18,
+		};
+	}
 }
