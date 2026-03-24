@@ -68,4 +68,13 @@ describe('Controller', () => {
 		expect(res.text).toBe('override');
 		expect(res.status).toBe(200);
 	});
+
+	it('should return object', async () => {
+		const res = await request(app.callback()).get('/index/object');
+		expect(res.body).toEqual({
+			name: 'test',
+			age: 18,
+		});
+		expect(res.status).toBe(200);
+	});
 });

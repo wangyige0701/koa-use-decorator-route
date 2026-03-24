@@ -48,4 +48,22 @@ describe('IF', () => {
 		expect(res.status).toBe(200);
 		expect(res.text).toBe('test');
 	});
+
+	it('should return 20', async () => {
+		vi.stubEnv('__IF__STATE__', 'true');
+
+		const app = createApp();
+		const res = await request(app.callback()).get('/if/param/10');
+		expect(res.text).toBe('20');
+		expect(res.status).toBe(200);
+	});
+
+	it('should return -10', async () => {
+		vi.stubEnv('__IF__STATE__', 'false');
+
+		const app = createApp();
+		const res = await request(app.callback()).get('/else/param/10');
+		expect(res.text).toBe('-10');
+		expect(res.status).toBe(200);
+	});
 });
