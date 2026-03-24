@@ -29,6 +29,11 @@ export interface InjectMetadata {
 	parameterIndex: number;
 }
 
+export interface InjectMethodMetadata {
+	inject: Function & { new (...args: any[]): any };
+	propertyKey: string | symbol;
+}
+
 export interface ResponseHeaderMetadata {
 	header: string;
 	value: string;
@@ -38,4 +43,4 @@ export type RouteMethods = Lowercase<keyof typeof Methods>;
 
 export type ExposeMethods = Capitalize<RouteMethods>;
 
-export type Decorator = (target: any, propertyKey?: string, descriptor?: PropertyDescriptor | number) => any;
+export type Decorator = (target: any, propertyKey?: string | symbol, descriptor?: PropertyDescriptor | number) => any;

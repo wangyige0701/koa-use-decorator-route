@@ -1,12 +1,26 @@
 import 'reflect-metadata/lite';
 
 import type { Middleware } from 'koa';
-import type { ControllerMethod, DecoratorsOptions, ResponseHeaderMetadata, RouteMethods } from './@types';
+import type {
+	ControllerMethod,
+	DecoratorsOptions,
+	InjectMethodMetadata,
+	ResponseHeaderMetadata,
+	RouteMethods,
+} from './@types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import Router from '@koa/router';
-import { CONTROLLER, RESPONSE_GLOBAL_HEADER, RESPONSE_HEADER, ROUTE_OVERRIDE, ROUTES, SINGLETON } from './config';
+import {
+	CONTROLLER,
+	INJECT_METHOD,
+	RESPONSE_GLOBAL_HEADER,
+	RESPONSE_HEADER,
+	ROUTE_OVERRIDE,
+	ROUTES,
+	SINGLETON,
+} from './config';
 
 export function decorator(options: DecoratorsOptions): Middleware {
 	const route = new Router();
@@ -48,7 +62,7 @@ export function decorator(options: DecoratorsOptions): Middleware {
 							? controllerPath.slice(0, -1)
 							: controllerPath;
 					const _path = !routeItem.path.startsWith('/') ? '/' : '' + routeItem.path;
-					// 保证
+					// 路径规则整理，确保路径以 / 开头，避免重复 / 问题
 					const path = _base + (_path === '/' ? '' : _path);
 					const method = routeItem.method.toLowerCase() as RouteMethods;
 					const handler = routeItem.handler;
@@ -67,11 +81,16 @@ export function decorator(options: DecoratorsOptions): Middleware {
 							ctx.set(header.header, header.value);
 						}
 
+						// 单例判断
 						if (Reflect.hasMetadata(SINGLETON, controllerClass)) {
-							const singleton = Reflect.getMetadata(SINGLETON, controllerClass);
-							ctx.body = await singleton[handler](ctx);
+							const singleton = toInjectMethodMetadata<any>(
+								controllerClass,
+								Reflect.getMetadata(SINGLETON, controllerClass),
+							);
+							ctx.body = await singleton[handler].call(singleton, ctx);
 						} else {
-							ctx.body = await new controllerClass()[handler](ctx);
+							const instance = toInjectMethodMetadata<any>(controllerClass, new controllerClass());
+							ctx.body = await instance[handler].call(instance, ctx);
 						}
 					});
 				}
@@ -89,6 +108,33 @@ export function decorator(options: DecoratorsOptions): Middleware {
 
 		await next();
 	};
+}
+
+/**
+ * 处理控制器方法的依赖注入
+ *
+ * @param cls 控制器类
+ * @param instance 实例对象
+ */
+function toInjectMethodMetadata<T extends Object>(cls: Function, instance: T): T {
+	const injections = (Reflect.getMetadata(INJECT_METHOD, cls) || []) as InjectMethodMetadata[];
+	if (!injections.length) {
+		return instance;
+	}
+
+	for (const injection of injections) {
+		const { propertyKey, inject } = injection;
+		if (typeof inject !== 'function') {
+			continue;
+		}
+		if (Reflect.hasMetadata(SINGLETON, inject)) {
+			instance[propertyKey as keyof typeof instance] = Reflect.getMetadata(SINGLETON, inject);
+		} else {
+			instance[propertyKey as keyof typeof instance] = new inject();
+		}
+	}
+
+	return instance;
 }
 
 export * from '@/decorators/action';
