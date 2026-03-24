@@ -1,18 +1,18 @@
-## 基于 koa 和 @koa/router 的装饰器路由中间件
+# 基于 koa 和 @koa/router 的装饰器路由中间件
 
 ## A Koa plugin for @koa/router that allows you to use decorators to define routes
 
 > 依赖 `koa` `@koa/router` `reflect-metadata`
 
-> depend on `koa` `@koa/router` `reflect-metadata`
+> Depend on `koa` `@koa/router` `reflect-metadata`
 
-### 安装 / Install
+## 安装 / Install
 
 ```bash
 npm install koa-use-decorator-route
 ```
 
-### 使用 / Use
+## 使用 / Use
 
 > 目录下的控制器文件名必须以 `Controller` 结尾
 
@@ -21,6 +21,8 @@ npm install koa-use-decorator-route
 > 目录下的控制器文件必须导出一个被 `@Controller` 装饰器装饰的类
 
 > The controller file must export a class decorated with `@Controller` decorator
+
+- ### 声明 / Declaration
 
 #### ESM Module
 
@@ -56,7 +58,7 @@ app.use(
 );
 ```
 
-### 基本声明示例 / Basic Declaration Example
+- ### 基本声明示例 / Basic Declaration Example
 
 #### 成员函数返回的数据会作为响应体返回
 
@@ -81,7 +83,7 @@ export class HomeController {
 }
 ```
 
-### 参数注入示例 / Parameter Injection Example
+- ### 参数注入示例 / Parameter Injection Example
 
 #### `Inject` 装饰器第二个参数可以是一个枚举值，也可以是一个函数
 
@@ -110,7 +112,7 @@ export class HomeController {
 }
 ```
 
-### 响应头示例 / Response Header Example
+- ### 响应头示例 / Response Header Example
 
 #### `ResponseHeader` 装饰器用于设置响应头，第一个参数是响应头名称，第二个参数是响应头值
 
@@ -141,7 +143,7 @@ export class HomeController {
 }
 ```
 
-### 条件装饰器 / Conditional Decorator
+- ### 条件装饰器 / Conditional Decorator (>= 0.1.0)
 
 #### `IF` 装饰器可以根据条件判断应用不同的装饰器，必须要链式调用 `ENDIF` 结束
 
@@ -156,6 +158,54 @@ export class HomeController {
 	@HttpMethod.Get('/')
 	async index() {
 		return 'Hello World!';
+	}
+}
+```
+
+- ### 成员属性注入 / Member Property Injection (>= 0.1.0)
+
+#### 可以通过传递构造函数给 `Inject` 装饰器来注入成员属性，或者在 ts 中通过类型反射来注入
+
+#### You can inject member properties by passing the class function to the `Inject` decorator, or by using type reflection in ts to inject
+
+```ts
+// HomeController.ts
+import type Koa from 'koa';
+import type { HomeService } from '@/service/HomeService';
+import { Controller, HttpMethod } from 'koa-use-decorator-route';
+import { HomeService2 } from '@/service/HomeService';
+
+@Controller('/home')
+export class HomeController {
+	// 如果不用非空断言，则 `tsconfig.json` 中必须开启 `strictPropertyInitialization`
+	// If not using non-null assertion, then `tsconfig.json` must enable `strictPropertyInitialization`
+	@Inject()
+	service!: HomeService;
+
+	@Inject(HomeService2)
+	service2!: HomeService2;
+
+	@HttpMethod.Get('/')
+	async index() {
+		return this.service.show();
+	}
+
+	@HttpMethod.Get('/service2')
+	async index2() {
+		return this.service2.show();
+	}
+}
+
+// HomeService.ts
+export class HomeService {
+	show() {
+		return 'Hello World!';
+	}
+}
+
+export class HomeService2 {
+	show() {
+		return 'Hello World 2!';
 	}
 }
 ```
