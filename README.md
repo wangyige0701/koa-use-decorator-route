@@ -157,7 +157,10 @@ export class HomeController {
 import type Koa from 'koa';
 import { Controller, HttpMethod, IF } from 'koa-use-decorator-route';
 
-@IF(false, @Controller('/if-not')).ELIF(false, @Controller('/elif')).ELSE(@Controller('/else')).ENDIF()
+@(IF(process.env.SOME_ENV, @Controller('/if-not'))
+	.ELIF(process.env.SOME_ENV, @Controller('/elif'))
+	.ELSE(@Controller('/else'))
+	.ENDIF())
 export class HomeController {
 	@HttpMethod.Get('/')
 	async index() {
