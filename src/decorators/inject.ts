@@ -64,12 +64,16 @@ export function Inject(...args: any[]): PropertyDecorator | ParameterDecorator {
 }
 
 /**
- * 上下文装饰器，用于注入 `Koa.Context`，只能用作参数装饰器
+ * 上下文装饰器，用于注入 `Koa.Context`，只能用作参数装饰器, 且只能注入一次
  *
- * Context decorator, used to inject Koa.Context, can only be used as parameter decorator
+ * Context decorator, used to inject Koa.Context, can only be used as parameter decorator, and can only be used once per method
  */
-export function Context() {
-	return (target: any, propertyKey: string, parameterIndex: number) => {
+export function Context(): ParameterDecorator {
+	return (target: any, propertyKey: string | symbol | undefined, parameterIndex: number) => {
+		if (!propertyKey) {
+			return;
+		}
+
 		const injects = (Reflect.getMetadata(INJECT, target.constructor, propertyKey) || []) as InjectMetadata[];
 
 		if (injects.find((item) => item.isContext)) {

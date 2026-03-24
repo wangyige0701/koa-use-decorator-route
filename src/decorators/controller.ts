@@ -7,7 +7,7 @@ import { CONTROLLER, ROUTE_OVERRIDE, SINGLETON } from '@/config';
  *
  * @param basePath 控制器基础路径
  */
-export function Controller(basePath: string) {
+export function Controller(basePath: string): ClassDecorator {
 	return (target: any) => {
 		Reflect.defineMetadata(CONTROLLER, basePath, target);
 		return target;
@@ -19,7 +19,7 @@ export function Controller(basePath: string) {
  *
  * Singleton pattern decorator
  */
-export function Singleton(...params: any[]) {
+export function Singleton(...params: any[]): ClassDecorator {
 	return (target: any) => {
 		if (!Reflect.hasMetadata(SINGLETON, target)) {
 			Reflect.defineMetadata(SINGLETON, new target(...params), target);
@@ -33,8 +33,8 @@ export function Singleton(...params: any[]) {
  *
  * Controller base path override decorator, can make the route path not contain the controller base path
  */
-export function ControllerBasePathOverride() {
-	return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+export function ControllerBasePathOverride(): MethodDecorator {
+	return (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
 		Reflect.defineMetadata(ROUTE_OVERRIDE, true, target.constructor, propertyKey);
 		return descriptor;
 	};

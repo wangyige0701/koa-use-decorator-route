@@ -10,8 +10,8 @@ const TypeMapFunction = {
 	[Types.Boolean]: (param: string) => param === 'true',
 };
 
-function Action(path: string, method: Methods) {
-	return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+function Action(path: string, method: Methods): MethodDecorator {
+	return (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
 		const routes = Reflect.getMetadata(ROUTES, target.constructor) || ([] as ControllerMethod[]);
 
 		const oldValue = descriptor.value;
