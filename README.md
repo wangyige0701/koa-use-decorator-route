@@ -14,6 +14,14 @@ npm install koa-use-decorator-route
 
 ### 使用 / Use
 
+> 目录下的控制器文件名必须以 `Controller` 结尾
+
+> The file name of the controller must end with `Controller`
+
+> 目录下的控制器文件必须导出一个被 `@Controller` 装饰器装饰的类
+
+> The controller file must export a class decorated with `@Controller` decorator
+
 #### ESM Module
 
 ```ts
@@ -137,7 +145,7 @@ export class HomeController {
 
 #### `IF` 装饰器可以根据条件判断应用不同的装饰器，必须要链式调用 `ENDIF` 结束
 
-#### `IF` decorator can be used to apply different decorators based on the condition, must be chained with `ENDIF`
+#### `IF` decorator can be used to apply different decorators based on a condition, and must be terminated by chaining a call to `ENDIF`
 
 ```ts
 import type Koa from 'koa';
