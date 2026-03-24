@@ -50,7 +50,7 @@ class IFDecorator {
 	}
 
 	private nullDecorator(): Decorator {
-		return (target: any, propertyKey?: string, descriptor?: PropertyDescriptor | number) => {
+		return (target: any, propertyKey?: string | symbol, descriptor?: PropertyDescriptor | number) => {
 			if (!propertyKey) {
 				return target;
 			}

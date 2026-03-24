@@ -12,8 +12,8 @@ import { Methods } from '@/enum';
  */
 export function ResponseHeader(header: string, value: string) {
 	function result(target: any): any;
-	function result(target: any, propertyKey: string, descriptor: PropertyDescriptor): PropertyDescriptor;
-	function result(target: any, propertyKey?: string, descriptor?: PropertyDescriptor) {
+	function result(target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor;
+	function result(target: any, propertyKey?: string | symbol, descriptor?: PropertyDescriptor) {
 		const data = {
 			header,
 			value,
@@ -69,8 +69,8 @@ export function Cross(
 		: void 0;
 
 	function result(target: any): any;
-	function result(target: any, propertyKey: string, descriptor: PropertyDescriptor): PropertyDescriptor;
-	function result(target: any, propertyKey?: string, descriptor?: PropertyDescriptor) {
+	function result(target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor;
+	function result(target: any, propertyKey?: string | symbol, descriptor?: PropertyDescriptor) {
 		if (propertyKey) {
 			originHeader && originHeader(target, propertyKey, descriptor!);
 			headerHeader && headerHeader(target, propertyKey, descriptor!);
