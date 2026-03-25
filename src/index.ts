@@ -44,6 +44,14 @@ export function decorator(options: DecoratorsOptions): Middleware {
 			const fileUrl = pathToFileURL(path.resolve(controllerDir, file)).href;
 			const controller = (await import(fileUrl)) as Record<string, any>;
 			for (const controllerClass of Object.values(controller)) {
+				// 过滤非法类型，确保是类或函数
+				if (
+					typeof controllerClass === 'object'
+						? controllerClass === null
+						: typeof controllerClass !== 'function'
+				) {
+					continue;
+				}
 				// 一定要包含 Controller 装饰器声明
 				const controllerPath = Reflect.getMetadata(CONTROLLER, controllerClass) as string;
 				if (typeof controllerPath !== 'string' || !controllerPath) {
