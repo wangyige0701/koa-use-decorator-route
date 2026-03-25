@@ -216,3 +216,19 @@ export class HomeService2 {
 	}
 }
 ```
+
+- ### 控制器基础路径覆盖 / Controller Base Path Override (>= 0.1.0)
+
+```ts
+import type Koa from 'koa';
+import { Controller, HttpMethod, ControllerBasePathOverride } from 'koa-use-decorator-route';
+
+@Controller('/home')
+export class HomeController {
+	@ControllerBasePathOverride()
+	@HttpMethod.Get('/home2/:name')
+	async string(@Inject('name') name: string) {
+		return `Hello ${name}`;
+	}
+}
+```
