@@ -2,9 +2,13 @@
 
 ## A Koa plugin for @koa/router that allows you to use decorators to define routes.
 
-> 依赖 `koa`、`@koa/router`、`reflect-metadata`
+> 依赖 `koa`、`@koa/router`、`reflect-metadata`；需要在 `tsconfig` 中启用 `experimentalDecorators` 和 `emitDecoratorMetadata`
 
-> Requires `koa`, `@koa/router`, and `reflect-metadata`.
+> Requires `koa`, `@koa/router`, and `reflect-metadata`. Needs to enable `experimentalDecorators` and `emitDecoratorMetadata` in `tsconfig`.
+
+> 此插件使用的装饰器是 TypeScript 的功能，如果使用 JavaScript，需要确保能正确编译为 TypeScript 风格的装饰器产物，包括参数装饰器。
+
+> The decorators used by this plugin are a TypeScript feature. If you are using JavaScript, you need to ensure that it can be correctly compiled to TypeScript-style decorator output, including parameter decorators.
 
 ### 提供基于 Koa 的装饰器路由，使路由定义更简洁以及更易读。
 
@@ -74,14 +78,46 @@ app.use(
 
 ```ts
 import type Koa from 'koa';
-import { Singleton, Controller, HttpMethod, Context } from 'koa-use-decorator-route';
+import { Controller, HttpMethod, Context } from 'koa-use-decorator-route';
 
-@Singleton()
 @Controller('/home')
 export class HomeController {
 	@HttpMethod.Get('/')
 	async index(@Context() ctx: Koa.Context) {
 		console.log(ctx.query);
+		return 'Hello World!';
+	}
+}
+```
+
+- ### 单例 / Singleton
+
+#### 单例装饰器不会修改或重写类的构造函数，而是在内部维护一个单例实例。只有在插件内部需要访问该类实例时，才会返回维护的实例对象。
+
+#### The singleton decorator does not modify or override the class constructor. Instead, it maintains a single instance internally and only returns this instance when accessed within the plugin.
+
+#### 非控制器目录下的其它类也可以使用 `@Singleton` 装饰器
+
+#### Classes outside the controller directory can also use the `@Singleton` decorator.
+
+```ts
+import { Singleton, Controller, HttpMethod } from 'koa-use-decorator-route';
+
+@Singleton()
+@Controller('/home')
+export class HomeController {
+	@HttpMethod.Get('/')
+	async index() {
+		return 'Hello World!';
+	}
+}
+
+// HomeService.ts
+import { Singleton } from 'koa-use-decorator-route';
+
+@Singleton()
+export class HomeService {
+	async index() {
 		return 'Hello World!';
 	}
 }
@@ -94,7 +130,6 @@ export class HomeController {
 #### `@Inject` decorator second parameter can be an enum value or a function.
 
 ```ts
-import type Koa from 'koa';
 import { Controller, HttpMethod, Inject, Types } from 'koa-use-decorator-route';
 
 @Controller('/home')
@@ -127,7 +162,6 @@ export class HomeController {
 #### The `@Cross` decorator handles cross-origin requests, and can be applied to controllers or individual member functions.
 
 ```ts
-import type Koa from 'koa';
 import { Controller, HttpMethod, ResponseHeader, Methods, Cross } from 'koa-use-decorator-route';
 
 @Controller('/home')
@@ -154,7 +188,6 @@ export class HomeController {
 #### The `@IF` decorator allows applying different decorators based on a condition, and must be concluded by chaining a call to `ENDIF`.
 
 ```ts
-import type Koa from 'koa';
 import { Controller, HttpMethod, IF } from 'koa-use-decorator-route';
 
 @(IF(process.env.SOME_ENV, @Controller('/if-not'))
@@ -177,10 +210,9 @@ export class HomeController {
 
 ```ts
 // HomeController.ts
-import type Koa from 'koa';
 import type { HomeService } from '@/service/HomeService';
-import { Controller, HttpMethod } from 'koa-use-decorator-route';
-import { HomeService2 } from '@/service/HomeService';
+import { Controller, HttpMethod, Inject } from 'koa-use-decorator-route';
+import { HomeService2, HomeService3 } from '@/service/HomeService';
 
 @Controller('/home')
 export class HomeController {
@@ -192,6 +224,11 @@ export class HomeController {
 	@Inject(HomeService2)
 	service2!: HomeService2;
 
+	// 当将类的构造函数作为参数传入 `@Inject` 装饰器时，TypeScript 类型也可以使用 `any`
+	// This means that when passing a class constructor to the `@Inject` decorator, the TypeScript type can be specified as `any`.
+	@Inject(HomeService3)
+	service3: any;
+
 	@HttpMethod.Get('/')
 	async index() {
 		return this.service.show();
@@ -200,6 +237,11 @@ export class HomeController {
 	@HttpMethod.Get('/service2')
 	async index2() {
 		return this.service2.show();
+	}
+
+	@HttpMethod.Get('/service3')
+	async index3() {
+		return this.service3.show();
 	}
 }
 
@@ -215,12 +257,17 @@ export class HomeService2 {
 		return 'Hello World 2!';
 	}
 }
+
+export class HomeService3 {
+	show() {
+		return 'Hello World 3!';
+	}
+}
 ```
 
 - ### 控制器基础路径覆盖 / Controller Base Path Override (>= 0.1.0)
 
 ```ts
-import type Koa from 'koa';
 import { Controller, HttpMethod, ControllerBasePathOverride } from 'koa-use-decorator-route';
 
 @Controller('/home')

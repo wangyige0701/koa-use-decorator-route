@@ -30,4 +30,11 @@ describe('Inject', () => {
 		expect(res.text).toBe('inject service 2');
 		expect(res.status).toBe(200);
 	});
+
+	it('should return inject service 3', async () => {
+		const app = getApp();
+		const res = await request(app.callback()).get('/inject/service3');
+		expect(res.text).toBe('inject service 3');
+		expect(res.status).toBe(200);
+	});
 });
