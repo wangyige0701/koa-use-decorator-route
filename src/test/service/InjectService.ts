@@ -12,3 +12,9 @@ export class InjectService2 {
 		return 'inject service 2';
 	}
 }
+
+export class InjectService3 {
+	show() {
+		return 'inject service 3';
+	}
+}
