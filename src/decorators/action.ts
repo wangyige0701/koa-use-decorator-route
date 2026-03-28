@@ -2,6 +2,7 @@ import type Koa from 'koa';
 import type { ControllerMethod, ExposeMethods, InjectMetadata } from '@/@types';
 import { INJECT, ROUTES } from '@/config';
 import { Methods, Types } from '@/enum';
+import { isFunction } from '@/utils';
 
 const TypeMapFunction = {
 	[Types.Int]: (param: string) => parseInt(param, 10) || 0,
@@ -32,7 +33,7 @@ function Action(path: string, method: Methods): MethodDecorator {
 					if (TypeMapFunction[inject.type]) {
 						param = TypeMapFunction[inject.type](param);
 					}
-				} else if (typeof inject.type === 'function') {
+				} else if (isFunction(inject.type)) {
 					param = inject.type(param);
 				}
 				injectParams[inject.parameterIndex] = param;
