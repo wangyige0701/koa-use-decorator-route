@@ -16,10 +16,12 @@ export default [
 			{
 				file: input.replace('src/', 'dist/').replace('.ts', '.mjs'),
 				format: 'esm',
+				exports: 'named',
 			},
 			{
 				file: input.replace('src/', 'dist/').replace('.ts', '.cjs'),
 				format: 'cjs',
+				exports: 'named',
 			},
 		],
 		external: ['@koa/router', 'koa', 'reflect-metadata', 'reflect-metadata/lite', 'tslib', /^koa\/.*/],
