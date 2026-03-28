@@ -13,12 +13,12 @@ export function decorator(options: string | DecoratorOptions, router_?: Router):
 	}
 
 	return async (ctx, next) => {
-		const { controllerDir, allowedMethods, prefix, matchFileName } = options || {};
+		const { controllerDir, allowedMethods, prefix, matchFileName, acceptAnyControllerName = false } = options || {};
 		if (!controllerDir) {
 			throw new Error(ControllerDirRequired);
 		}
 
-		await initialize(router, controllerDir, matchFileName);
+		await initialize(router, controllerDir, matchFileName, acceptAnyControllerName);
 
 		if (isString(prefix) && prefix) {
 			router.prefix(prefix);

@@ -25,8 +25,15 @@ import { isArray, isFunction, isRegExp, isString } from '@/utils';
  * 初始化路由
  * @param route Router 实例
  * @param controllerDir 控制器目录路径
+ * @param match 匹配规则
+ * @param acceptAnyControllerName 是否允许任何控制器文件名，默认 false
  */
-export async function initialize(router: Router, controllerDir: string, match?: MatchDirectory) {
+export async function initialize(
+	router: Router,
+	controllerDir: string,
+	match?: MatchDirectory,
+	acceptAnyControllerName: boolean = false,
+) {
 	if (!fs.existsSync(controllerDir) || !fs.statSync(controllerDir).isDirectory()) {
 		throw new Error(ControllerDirNotExist(controllerDir));
 	}
@@ -34,7 +41,7 @@ export async function initialize(router: Router, controllerDir: string, match?: 
 	const matchRule = handleMatchRules(match);
 	const files = fs.readdirSync(controllerDir);
 	for (const file of files) {
-		if (!/^[\w]+Controller\.(m|c)?(js|ts)$/.test(file)) {
+		if (!acceptAnyControllerName && !/^[\w]+Controller\.(m|c)?(js|ts)$/.test(file)) {
 			continue;
 		}
 
