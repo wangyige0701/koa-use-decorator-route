@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import Koa from 'koa';
 import path from 'node:path';
-import { decorator } from '@/index';
 import { fileURLToPath } from 'node:url';
+import { decorator } from '@/index';
 
 describe('Controller', () => {
 	const app = new Koa();

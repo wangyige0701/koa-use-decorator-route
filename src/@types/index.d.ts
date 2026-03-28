@@ -1,7 +1,7 @@
-import type { AllowedMethodsOptions } from '@koa/router';
+import type { AllowedMethodsOptions, Router } from '@koa/router';
 import type { Methods, Types } from '@/enum';
 
-export interface DecoratorsOptions {
+export interface DecoratorOptions {
 	/**
 	 * 控制器目录绝对路径
 	 *
@@ -16,6 +16,12 @@ export interface DecoratorsOptions {
 	 * Allowed request methods
 	 */
 	allowedMethods?: boolean | AllowedMethodsOptions;
+	/**
+	 * 路由前缀
+	 *
+	 * Route prefix
+	 */
+	prefix?: string;
 }
 
 export interface ControllerMethod {

@@ -1,6 +1,7 @@
 import type { InjectMetadata, InjectMethodMetadata } from '@/@types';
 import { INJECT, INJECT_METHOD } from '@/config';
 import { Types } from '@/enum';
+import { isFunction } from '@/utils';
 
 type InjectType = Types | ((param: string) => any);
 
@@ -23,7 +24,7 @@ export function Inject(constructor?: Function): PropertyDecorator;
 export function Inject(paramName: string, type?: InjectType): ParameterDecorator;
 export function Inject(...args: any[]): PropertyDecorator | ParameterDecorator {
 	// 如果没有传入参数，或者第一个参数是函数，则表示注入属性实例
-	if (args.length === 0 || typeof args[0] === 'function') {
+	if (args.length === 0 || isFunction(args[0])) {
 		return (target: any, propertyKey: string | symbol) => {
 			const inject = args[0] || Reflect.getMetadata('design:type', target, propertyKey);
 			if (!inject) {
