@@ -1,5 +1,7 @@
 import 'reflect-metadata/lite';
 
+import { Decorator } from '@/initialize/constructor';
+
 export * from '@/decorators/action';
 export * from '@/decorators/response';
 export * from '@/decorators/controller';
@@ -10,3 +12,5 @@ export { Types, Methods } from '@/enum';
 
 export { decorator } from '@/initialize/function';
 export { Decorator } from '@/initialize/constructor';
+
+export default Decorator;

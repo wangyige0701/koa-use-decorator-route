@@ -21,8 +21,18 @@ export function Controller(basePath: string): ClassDecorator {
  */
 export function Singleton(...params: any[]): ClassDecorator {
 	return (target: any) => {
+		let instance: any = null;
 		if (!Reflect.hasMetadata(SINGLETON, target)) {
-			Reflect.defineMetadata(SINGLETON, new target(...params), target);
+			Reflect.defineMetadata(
+				SINGLETON,
+				() => {
+					if (!instance) {
+						instance = new target(...params);
+					}
+					return instance;
+				},
+				target,
+			);
 		}
 		return target;
 	};
