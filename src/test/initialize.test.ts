@@ -67,4 +67,16 @@ describe('initialize', () => {
 		expect(res.text).toBe('get');
 		expect(res.status).toBe(200);
 	});
+
+	it('use prefix parameter with constructor', async () => {
+		const app = new Koa();
+		const decorator = new Decorator(dir);
+		decorator.prefix('/api').allowedMethods();
+
+		app.use(decorator.middleware());
+
+		const res = await request(app.callback()).get('/api/index/get');
+		expect(res.text).toBe('get');
+		expect(res.status).toBe(200);
+	});
 });
