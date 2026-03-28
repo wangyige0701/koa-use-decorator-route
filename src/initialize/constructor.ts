@@ -3,11 +3,11 @@ import type { MatchDirectory } from '@/@types';
 import Router from '@koa/router';
 import { ControllerDirRequired } from '@/error';
 import { decorator } from '@/initialize/function';
-import { isFunction } from '@/utils';
+import { isArray, isFunction } from '@/utils';
 
 export class Decorator {
-	private controllerDir: string;
 	private _router!: Router;
+	private controllerDir: string;
 	private matchRules?: MatchDirectory;
 
 	constructor(controllerDir: string, router?: Router) {
@@ -59,17 +59,18 @@ export class Decorator {
 	}
 
 	matchFileName(rule: MatchDirectory) {
-		if (!this.match) {
-			return this;
-		}
 		if (isFunction(rule)) {
 			this.matchRules = rule;
 			return this;
 		}
-		if (!this.match) {
+		if (!this.matchRules) {
 			this.matchRules = [] as (string | RegExp)[];
 		}
-		(this.matchRules as (string | RegExp)[]).push(...(rule as Array<string | RegExp>));
+		if (isArray(rule)) {
+			(this.matchRules as (string | RegExp)[]).push(...(rule as Array<string | RegExp>));
+		} else {
+			(this.matchRules as (string | RegExp)[]).push(rule);
+		}
 		return this;
 	}
 }
