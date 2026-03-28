@@ -1,4 +1,4 @@
-import type { AllowedMethodsOptions, Router } from '@koa/router';
+import type { AllowedMethodsOptions } from '@koa/router';
 import type { Methods, Types } from '@/enum';
 
 export interface DecoratorOptions {
