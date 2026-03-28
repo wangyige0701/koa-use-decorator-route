@@ -22,6 +22,12 @@ export interface DecoratorOptions {
 	 * Route prefix
 	 */
 	prefix?: string;
+	/**
+	 * 控制器文件名匹配规则
+	 *
+	 * Controller file name match rule
+	 */
+	matchFileName?: MatchDirectory;
 }
 
 export interface ControllerMethod {
@@ -52,3 +58,5 @@ export type RouteMethods = Lowercase<keyof typeof Methods>;
 export type ExposeMethods = Capitalize<RouteMethods>;
 
 export type Decorator = ClassDecorator | PropertyDecorator | MethodDecorator | ParameterDecorator;
+
+export type MatchDirectory = RegExp | string | Array<string | RegExp> | ((val: string, suffix?: string) => boolean);
