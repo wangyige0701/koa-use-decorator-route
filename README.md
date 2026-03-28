@@ -6,9 +6,9 @@
 
 > Requires `koa`, `@koa/router`, and `reflect-metadata`. Needs to enable `experimentalDecorators` and `emitDecoratorMetadata` in `tsconfig`.
 
-> 此插件使用的装饰器是 TypeScript 的功能，如果使用 JavaScript，需要确保能正确编译为 TypeScript 风格的装饰器产物，包括参数装饰器。
+> 此插件使用的装饰器是 TypeScript 的功能，如果使用 JavaScript，需要确保能正确编译为 TypeScript 风格的装饰器产物（如 Babel），包括参数装饰器。
 
-> The decorators used by this plugin are a TypeScript feature. If you are using JavaScript, you need to ensure that it can be correctly compiled to TypeScript-style decorator output, including parameter decorators.
+> This plugin relies on TypeScript decorators. If you are using JavaScript, you must ensure your build toolchain (e.g., Babel) supports legacy/TypeScript-style decorators, including parameter decorators.
 
 ### 提供基于 Koa 的装饰器路由，使路由定义更简洁以及更易读。
 
@@ -20,11 +20,11 @@
 npm install koa-use-decorator-route
 ```
 
-## 使用 / Use
+## 使用 / Usage
 
-> 目录下的控制器文件名必须以 `Controller` 结尾
+> 目录下的控制器文件名必须以 `Controller` 结尾。可以通过 `acceptAnyControllerName` 允许任何控制器文件名 (>= 0.2.0)
 
-> The controller file name must end with `Controller`.
+> The controller file name must end with `Controller`. You can allow any controller file name by setting `acceptAnyControllerName: true` (>= 0.2.0).
 
 > 目录下的控制器文件必须导出一个被 `@Controller` 装饰器装饰的类
 
@@ -35,7 +35,7 @@ npm install koa-use-decorator-route
 #### ESM Module
 
 ```ts
-import { Koa } from 'koa';
+import Koa from 'koa';
 import { decorator } from 'koa-use-decorator-route';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -66,6 +66,59 @@ app.use(
 );
 ```
 
+#### 函数创建中间件 / Create Middleware via Function
+
+> 扩展传参方式 / Extended parameter options (>= 0.2.0)
+
+```ts
+import Koa from 'koa';
+import Router from '@koa/router';
+import { decorator } from 'koa-use-decorator-route';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const dir = resolve(dirname(fileURLToPath(import.meta.url)), './controller');
+
+const app = new Koa();
+const router = new Router();
+// 可以传递 router 实例，来自定义插件内部的路由实例
+// You can pass a router instance to customize the internal router instance.
+app.use(decorator(dir, router)).use(router.allowedMethods());
+```
+
+#### 构造函数创建中间件 / Create Middleware via Constructor (>= 0.2.0)
+
+> `Decorator` 实例可以直接调用 `Router` 实例的方法，内部通过代理模式实现。
+
+> You can directly call methods of `Router` instance on `Decorator` instance. The methods are proxied internally.
+
+```ts
+import Koa from 'koa';
+import Router from '@koa/router';
+
+import { Decorator } from 'koa-use-decorator-route';
+// ======= or =======
+import Decorator from 'koa-use-decorator-route';
+
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const dir = resolve(dirname(fileURLToPath(import.meta.url)), './controller');
+
+const app = new Koa();
+
+const decorator = new Decorator(dir);
+// 可以直接使用 `Router` 实例中的 `prefix` 方法
+// You can directly call `prefix` method of `Router` instance on `Decorator` instance.
+decorator.prefix('/api');
+app.use(decorator.middleware()).use(decorator.allowedMethods());
+
+// 自定义路由实例 / Customize Router Instance
+const router = new Router();
+const decorator = new Decorator(dir, router);
+app.use(decorator.middleware()).use(decorator.allowedMethods());
+```
+
 - ### 基本声明示例 / Basic Declaration Example
 
 #### 成员函数返回的数据会作为响应体返回
@@ -92,9 +145,9 @@ export class HomeController {
 
 - ### 单例 / Singleton
 
-#### 单例装饰器不会修改或重写类的构造函数，而是在内部维护一个单例实例。只有在插件内部需要访问该类实例时，才会返回维护的实例对象。
+#### 单例装饰器不会修改或重写类的构造函数，而是在内部维护一个单例实例，插件生命周期内会复用该实例。
 
-#### The singleton decorator does not modify or override the class constructor. Instead, it maintains a single instance internally and only returns this instance when accessed within the plugin.
+#### The `@Singleton` decorator does not modify or override the class constructor. Instead, it internally manages a single shared instance, which is reused whenever the class is instantiated within the plugin lifecycle.
 
 #### 非控制器目录下的其它类也可以使用 `@Singleton` 装饰器
 
@@ -127,7 +180,13 @@ export class HomeService {
 
 #### `@Inject` 装饰器第二个参数可以是一个枚举值，也可以是一个函数
 
+> - 预定义枚举值（如 `Types.Int`）用于内置类型转换
+> - 自定义函数用于转换参数值
+
 #### `@Inject` decorator second parameter can be an enum value or a function.
+
+> - a predefined enum (e.g., `Types.Int`) for built-in type conversion
+> - a custom function for transforming the value
 
 ```ts
 import { Controller, HttpMethod, Inject, Types } from 'koa-use-decorator-route';
@@ -159,7 +218,7 @@ export class HomeController {
 
 #### 提供一个 `@Cross` 装饰器，用于处理跨域请求，可作用于控制器或成员函数上
 
-#### The `@Cross` decorator handles cross-origin requests, and can be applied to controllers or individual member functions.
+#### The `@Cross` decorator enables CORS (Cross-Origin Resource Sharing). It can be applied at the controller or method level.
 
 ```ts
 import { Controller, HttpMethod, ResponseHeader, Methods, Cross } from 'koa-use-decorator-route';
@@ -190,9 +249,9 @@ export class HomeController {
 ```ts
 import { Controller, HttpMethod, IF } from 'koa-use-decorator-route';
 
-@(IF(process.env.SOME_ENV, @Controller('/if-not'))
-	.ELIF(process.env.SOME_ENV, @Controller('/elif'))
-	.ELSE(@Controller('/else'))
+@(IF(process.env.SOME_ENV, Controller('/if-not'))
+	.ELIF(process.env.SOME_ENV, Controller('/elif'))
+	.ELSE(Controller('/else'))
 	.ENDIF())
 export class HomeController {
 	@HttpMethod.Get('/')
@@ -202,7 +261,7 @@ export class HomeController {
 }
 ```
 
-- ### 成员属性注入 / Member Property Injection (>= 0.1.0)
+- ### 成员属性注入 / Property Injection (>= 0.1.0)
 
 #### 可以通过传递构造函数给 `@Inject` 装饰器来注入成员属性，或者在 ts 中通过类型反射来注入
 
@@ -278,4 +337,103 @@ export class HomeController {
 		return `Hello ${name}`;
 	}
 }
+```
+
+- ### 路由实例方法代理 / Router Method Proxying (>= 0.2.0)
+
+```ts
+import Koa from 'koa';
+import Decorator from 'koa-use-decorator-route';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const dir = resolve(dirname(fileURLToPath(import.meta.url)), './controller');
+
+const app = new Koa();
+
+const decorator = new Decorator(dir);
+decorator.prefix('/api').param('user', (id, ctx, next) => {
+	ctx.user = users[id];
+	if (!ctx.user) return (ctx.status = 404);
+	return next();
+});
+app.use(decorator.middleware()).use(decorator.allowedMethods());
+```
+
+- ### 控制器文件过滤 / Controller File Filter (>= 0.2.0)
+
+#### 通过函数创建 / Create a custom filter function
+
+```ts
+app.use(
+	decorator({
+		controllerDir: dir,
+		// 仅加载名为 IndexController 的文件（去除扩展名后比较）
+		// Only load files with the name IndexController (without extension)
+		matchFileName: 'IndexController',
+	}),
+);
+
+app.use(
+	decorator({
+		controllerDir: dir,
+		// 加载以 Admin 开头的控制器：AdminController、AdminUserController 等
+		// Load controllers that start with Admin, such as AdminController, AdminUserController, etc.
+		matchFileName: /^Admin/,
+	}),
+);
+
+app.use(
+	decorator({
+		controllerDir: dir,
+		matchFileName: ['IndexController', /^Admin/],
+	}),
+);
+
+app.use(
+	decorator({
+		controllerDir: dir,
+		// 自定义函数可以同时访问文件基名 (val) 和扩展名 (suffix)
+		// Custom function can access both the file base name (val) and extension (suffix)
+		matchFileName: (val, suffix) => {
+			return val.startsWith('Index') && suffix === '.ts';
+		},
+	}),
+);
+```
+
+#### 通过构造函数创建 / Create a custom filter function
+
+```ts
+const decorator = new Decorator(dir);
+
+// 链式添加规则（可以多次调用 matchFileName）
+// Chainable rules (can be called multiple times)
+decorator
+	.matchFileName('IndexController')
+	.matchFileName(/^Admin/)
+	.matchFileName(['IndexController', /^Admin/]);
+
+// 传递函数时会覆盖之前的所有规则
+// Passing a function will override all previous rules
+decorator.matchFileName((val, suffix) => val !== 'SkipController');
+```
+
+- ### 控制器名称限制 / Controller Naming Convention (>= 0.2.0)
+
+#### 默认情况下，控制器文件名需要以 `Controller` 结尾。从 `0.2.0` 版本开始，可以通过配置关闭该限制。
+
+#### By default, controller file names are expected to end with `Controller`. Starting from version `0.2.0`, this restriction can be disabled via configuration.
+
+```ts
+app.use(
+	decorator({
+		controllerDir: dir,
+		acceptAnyControllerName: true,
+	}),
+);
+
+// or
+
+app.use(decorator.acceptAnyControllerName().middleware());
 ```
