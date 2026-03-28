@@ -25,9 +25,17 @@ export interface DecoratorOptions {
 	/**
 	 * 控制器文件名匹配规则
 	 *
-	 * Controller file name match rule
+	 * Controller file name match rules
 	 */
 	matchFileName?: MatchDirectory;
+	/**
+	 * 是否不再要求控制器文件名以 `Controller` 结尾
+	 *
+	 * Allow controller files without the `Controller` suffix
+	 *
+	 * @default false
+	 */
+	acceptAnyControllerName?: boolean;
 }
 
 export interface ControllerMethod {

@@ -9,6 +9,7 @@ export class Decorator {
 	private _router!: Router;
 	private controllerDir: string;
 	private matchRules?: MatchDirectory;
+	private _acceptAnyControllerName: boolean = false;
 
 	constructor(controllerDir: string, router?: Router) {
 		if (!controllerDir) {
@@ -51,13 +52,6 @@ export class Decorator {
 		return this._router;
 	}
 
-	middleware(): Middleware {
-		if (this.matchRules) {
-			return decorator({ controllerDir: this.controllerDir, matchFileName: this.matchRules }, this._router);
-		}
-		return decorator(this.controllerDir, this._router);
-	}
-
 	matchFileName(rule: MatchDirectory) {
 		if (isFunction(rule)) {
 			this.matchRules = rule;
@@ -72,6 +66,27 @@ export class Decorator {
 			(this.matchRules as (string | RegExp)[]).push(rule);
 		}
 		return this;
+	}
+
+	/**
+	 * 允许任何控制器文件名
+	 *
+	 * Allow any controller file name
+	 */
+	acceptAnyControllerName() {
+		this._acceptAnyControllerName = true;
+		return this;
+	}
+
+	middleware(): Middleware {
+		return decorator(
+			{
+				controllerDir: this.controllerDir,
+				matchFileName: this.matchRules,
+				acceptAnyControllerName: this._acceptAnyControllerName,
+			},
+			this._router,
+		);
 	}
 }
 

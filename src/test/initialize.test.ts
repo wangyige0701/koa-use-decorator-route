@@ -1,5 +1,5 @@
 import Koa from 'koa';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -12,9 +12,8 @@ describe('initialize', () => {
 	it('use constructor', async () => {
 		const app = new Koa();
 		const decorator = new Decorator(dir);
-		decorator.allowedMethods();
 
-		app.use(decorator.middleware());
+		app.use(decorator.middleware()).use(decorator.allowedMethods());
 
 		const res = await request(app.callback()).get('/index/get');
 		expect(res.text).toBe('get');
@@ -24,10 +23,9 @@ describe('initialize', () => {
 	it('use constructor with custom router', async () => {
 		const app = new Koa();
 		const router = new Router();
-		router.allowedMethods();
 		const decorator = new Decorator(dir, router);
 
-		app.use(decorator.middleware());
+		app.use(decorator.middleware()).use(router.allowedMethods());
 
 		const res = await request(app.callback()).get('/index/get');
 		expect(res.text).toBe('get');
@@ -46,8 +44,7 @@ describe('initialize', () => {
 	it('use function with custom router', async () => {
 		const app = new Koa();
 		const router = new Router();
-		router.allowedMethods();
-		app.use(decorator(dir, router));
+		app.use(decorator(dir, router)).use(router.allowedMethods());
 
 		const res = await request(app.callback()).get('/index/get');
 		expect(res.text).toBe('get');
@@ -71,9 +68,9 @@ describe('initialize', () => {
 	it('use prefix parameter with constructor', async () => {
 		const app = new Koa();
 		const decorator = new Decorator(dir);
-		decorator.prefix('/api').allowedMethods();
+		decorator.prefix('/api');
 
-		app.use(decorator.middleware());
+		app.use(decorator.middleware()).use(decorator.allowedMethods());
 
 		const res = await request(app.callback()).get('/api/index/get');
 		expect(res.text).toBe('get');
