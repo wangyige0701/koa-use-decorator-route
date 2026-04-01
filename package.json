@@ -26,8 +26,10 @@
 		"koa",
 		"route",
 		"router",
-		"@koa/route",
-		"decorator"
+		"@koa/router",
+		"decorator",
+		"controller",
+		"routing"
 	],
 	"author": "Yige Wang <wyg1776686515@gmail.com>",
 	"homepage": "https://github.com/wangyige0701/koa-use-decorator-route",
@@ -60,9 +62,9 @@
 		"reflect-metadata": "^0.2.2"
 	},
 	"peerDependencies": {
-		"@koa/router": ">=8.0.0",
 		"koa": ">=2.0.0",
-		"reflect-metadata": "^0.2.0"
+		"@koa/router": ">=10.0.0",
+		"reflect-metadata": ">=0.2.0"
 	},
 	"packageManager": "pnpm@9.1.0"
 }
