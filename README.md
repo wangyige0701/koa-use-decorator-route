@@ -1,10 +1,10 @@
-# 基于 koa 和 @koa/router 的装饰器路由中间件
+# 一个基于装饰器的 Koa 路由封装，提供控制器抽象、参数注入和单例管理
 
-## A Koa plugin for @koa/router that allows you to use decorators to define routes.
+## A decorator-driven Koa routing framework with controller abstraction, parameter injection, and singleton support.
 
-> 依赖 `koa`、`@koa/router`、`reflect-metadata`；需要在 `tsconfig` 中启用 `experimentalDecorators` 和 `emitDecoratorMetadata`
+> 依赖 `koa`、`@koa/router`、`reflect-metadata`
 
-> Requires `koa`, `@koa/router`, and `reflect-metadata`. Needs to enable `experimentalDecorators` and `emitDecoratorMetadata` in `tsconfig`.
+> Requires `koa`, `@koa/router`, and `reflect-metadata`.
 
 > 此插件使用的装饰器是 TypeScript 的功能，如果使用 JavaScript，需要确保能正确编译为 TypeScript 风格的装饰器产物（如 Babel），包括参数装饰器。
 
@@ -19,6 +19,17 @@
 ```bash
 npm install koa-use-decorator-route
 ```
+
+## 依赖要求 / Requirements
+
+- `koa` >=2.0.0
+- `@koa/router` >=10.0.0
+- `reflect-metadata` >=0.2.0
+
+> tsconfig.json:
+
+- `"experimentalDecorators": true`
+- `"emitDecoratorMetadata": true`
 
 ## 使用 / Usage
 
