@@ -33,9 +33,9 @@ npm install koa-use-decorator-router
 
 ## 使用 / Usage
 
-> 目录下的控制器文件名必须以 `Controller` 结尾。可以通过 `acceptAnyControllerName` 允许任何控制器文件名 (>= 0.2.0)
+> 目录下的控制器文件名必须以 `Controller` 结尾。可以通过 `acceptAnyControllerName` 允许任何控制器文件名
 
-> The controller file name must end with `Controller`. You can allow any controller file name by setting `acceptAnyControllerName: true` (>= 0.2.0).
+> The controller file name must end with `Controller`. You can allow any controller file name by setting `acceptAnyControllerName: true`
 
 > 目录下的控制器文件必须导出一个被 `@Controller` 装饰器装饰的类
 
@@ -79,7 +79,7 @@ app.use(
 
 #### 函数创建中间件 / Create Middleware via Function
 
-> 扩展传参方式 / Extended parameter options (>= 0.2.0)
+> 扩展传参方式 / Extended parameter options
 
 ```ts
 import Koa from 'koa';
@@ -97,7 +97,7 @@ const router = new Router();
 app.use(decorator(dir, router)).use(router.allowedMethods());
 ```
 
-#### 构造函数创建中间件 / Create Middleware via Constructor (>= 0.2.0)
+#### 构造函数创建中间件 / Create Middleware via Constructor
 
 > `Decorator` 实例可以直接调用 `Router` 实例的方法，内部通过代理模式实现。
 
@@ -251,7 +251,7 @@ export class HomeController {
 }
 ```
 
-- ### 条件装饰器 / Conditional Decorator (>= 0.1.0)
+- ### 条件装饰器 / Conditional Decorator
 
 #### `@IF` 装饰器可以根据条件判断应用不同的装饰器，必须要链式调用 `ENDIF` 结束
 
@@ -272,7 +272,7 @@ export class HomeController {
 }
 ```
 
-- ### 成员属性注入 / Property Injection (>= 0.1.0)
+- ### 成员属性注入 / Property Injection
 
 #### 可以通过传递构造函数给 `@Inject` 装饰器来注入成员属性，或者在 ts 中通过类型反射来注入
 
@@ -335,7 +335,7 @@ export class HomeService3 {
 }
 ```
 
-- ### 控制器基础路径覆盖 / Controller Base Path Override (>= 0.1.0)
+- ### 控制器基础路径覆盖 / Controller Base Path Override
 
 ```ts
 import { Controller, HttpMethod, ControllerBasePathOverride } from 'koa-use-decorator-router';
@@ -350,7 +350,7 @@ export class HomeController {
 }
 ```
 
-- ### 路由实例方法代理 / Router Method Proxying (>= 0.2.0)
+- ### 路由实例方法代理 / Router Method Proxying
 
 ```ts
 import Koa from 'koa';
@@ -371,7 +371,7 @@ decorator.prefix('/api').param('user', (id, ctx, next) => {
 app.use(decorator.middleware()).use(decorator.allowedMethods());
 ```
 
-- ### 控制器文件过滤 / Controller File Filter (>= 0.2.0)
+- ### 控制器文件过滤 / Controller File Filter
 
 #### 通过函数创建 / Create a custom filter function
 
@@ -430,7 +430,7 @@ decorator
 decorator.matchFileName((val, suffix) => val !== 'SkipController');
 ```
 
-- ### 控制器名称限制 / Controller Naming Convention (>= 0.2.0)
+- ### 控制器名称限制 / Controller Naming Convention
 
 #### 默认情况下，控制器文件名需要以 `Controller` 结尾。从 `0.2.0` 版本开始，可以通过配置关闭该限制。
 
