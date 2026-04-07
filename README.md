@@ -17,7 +17,7 @@
 ## 安装 / Install
 
 ```bash
-npm install koa-use-decorator-route
+npm install koa-use-decorator-router
 ```
 
 ## 使用 / Usage
@@ -36,7 +36,7 @@ npm install koa-use-decorator-route
 
 ```ts
 import Koa from 'koa';
-import { decorator } from 'koa-use-decorator-route';
+import { decorator } from 'koa-use-decorator-router';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -53,7 +53,7 @@ app.use(
 
 ```ts
 const Koa = require('koa');
-const decorator = require('koa-use-decorator-route');
+const decorator = require('koa-use-decorator-router');
 const { dirname, resolve } = require('node:path');
 const { fileURLToPath } = require('node:url');
 
@@ -73,7 +73,7 @@ app.use(
 ```ts
 import Koa from 'koa';
 import Router from '@koa/router';
-import { decorator } from 'koa-use-decorator-route';
+import { decorator } from 'koa-use-decorator-router';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -96,9 +96,9 @@ app.use(decorator(dir, router)).use(router.allowedMethods());
 import Koa from 'koa';
 import Router from '@koa/router';
 
-import { Decorator } from 'koa-use-decorator-route';
+import { Decorator } from 'koa-use-decorator-router';
 // ======= or =======
-import Decorator from 'koa-use-decorator-route';
+import Decorator from 'koa-use-decorator-router';
 
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -131,7 +131,7 @@ app.use(decorator.middleware()).use(decorator.allowedMethods());
 
 ```ts
 import type Koa from 'koa';
-import { Controller, HttpMethod, Context } from 'koa-use-decorator-route';
+import { Controller, HttpMethod, Context } from 'koa-use-decorator-router';
 
 @Controller('/home')
 export class HomeController {
@@ -154,7 +154,7 @@ export class HomeController {
 #### Classes outside the controller directory can also use the `@Singleton` decorator.
 
 ```ts
-import { Singleton, Controller, HttpMethod } from 'koa-use-decorator-route';
+import { Singleton, Controller, HttpMethod } from 'koa-use-decorator-router';
 
 @Singleton()
 @Controller('/home')
@@ -166,7 +166,7 @@ export class HomeController {
 }
 
 // HomeService.ts
-import { Singleton } from 'koa-use-decorator-route';
+import { Singleton } from 'koa-use-decorator-router';
 
 @Singleton()
 export class HomeService {
@@ -189,7 +189,7 @@ export class HomeService {
 > - a custom function for transforming the value
 
 ```ts
-import { Controller, HttpMethod, Inject, Types } from 'koa-use-decorator-route';
+import { Controller, HttpMethod, Inject, Types } from 'koa-use-decorator-router';
 
 @Controller('/home')
 export class HomeController {
@@ -221,7 +221,7 @@ export class HomeController {
 #### The `@Cross` decorator enables CORS (Cross-Origin Resource Sharing). It can be applied at the controller or method level.
 
 ```ts
-import { Controller, HttpMethod, ResponseHeader, Methods, Cross } from 'koa-use-decorator-route';
+import { Controller, HttpMethod, ResponseHeader, Methods, Cross } from 'koa-use-decorator-router';
 
 @Controller('/home')
 @Cross()
@@ -247,7 +247,7 @@ export class HomeController {
 #### The `@IF` decorator allows applying different decorators based on a condition, and must be concluded by chaining a call to `ENDIF`.
 
 ```ts
-import { Controller, HttpMethod, IF } from 'koa-use-decorator-route';
+import { Controller, HttpMethod, IF } from 'koa-use-decorator-router';
 
 @(IF(process.env.SOME_ENV, Controller('/if-not'))
 	.ELIF(process.env.SOME_ENV, Controller('/elif'))
@@ -270,7 +270,7 @@ export class HomeController {
 ```ts
 // HomeController.ts
 import type { HomeService } from '@/service/HomeService';
-import { Controller, HttpMethod, Inject } from 'koa-use-decorator-route';
+import { Controller, HttpMethod, Inject } from 'koa-use-decorator-router';
 import { HomeService2, HomeService3 } from '@/service/HomeService';
 
 @Controller('/home')
@@ -327,7 +327,7 @@ export class HomeService3 {
 - ### 控制器基础路径覆盖 / Controller Base Path Override (>= 0.1.0)
 
 ```ts
-import { Controller, HttpMethod, ControllerBasePathOverride } from 'koa-use-decorator-route';
+import { Controller, HttpMethod, ControllerBasePathOverride } from 'koa-use-decorator-router';
 
 @Controller('/home')
 export class HomeController {
@@ -343,7 +343,7 @@ export class HomeController {
 
 ```ts
 import Koa from 'koa';
-import Decorator from 'koa-use-decorator-route';
+import Decorator from 'koa-use-decorator-router';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
