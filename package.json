@@ -1,7 +1,7 @@
 {
 	"name": "koa-use-decorator-route",
-	"version": "0.2.0",
-	"description": "基于 koa 和 @koa/router 的装饰器路由中间件 / A Koa plugin for @koa/router that allows you to use decorators to define routes",
+	"version": "0.2.1",
+	"description": "This package has been renamed to koa-use-decorator-router",
 	"type": "module",
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
