@@ -1,5 +1,5 @@
 {
-	"name": "koa-use-decorator-route",
+	"name": "koa-use-decorator-router",
 	"version": "0.2.0",
 	"description": "基于 koa 和 @koa/router 的装饰器路由中间件 / A Koa plugin for @koa/router that allows you to use decorators to define routes",
 	"type": "module",
@@ -32,10 +32,10 @@
 		"routing"
 	],
 	"author": "Yige Wang <wyg1776686515@gmail.com>",
-	"homepage": "https://github.com/wangyige0701/koa-use-decorator-route",
+	"homepage": "https://github.com/wangyige0701/koa-use-decorator-router",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/wangyige0701/koa-use-decorator-route.git"
+		"url": "git+https://github.com/wangyige0701/koa-use-decorator-router.git"
 	},
 	"license": "MIT",
 	"devDependencies": {
