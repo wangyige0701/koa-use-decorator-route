@@ -1,3 +1,5 @@
+> **This package has been renamed to `koa-use-decorator-router`.**
+
 # 一个基于装饰器的 Koa 路由封装，提供控制器抽象、参数注入和单例管理
 
 ## A decorator-driven Koa routing framework with controller abstraction, parameter injection, and singleton support.
