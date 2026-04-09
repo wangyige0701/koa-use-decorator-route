@@ -1,6 +1,6 @@
 {
 	"name": "koa-use-decorator-route",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "This package has been renamed to koa-use-decorator-router",
 	"type": "module",
 	"main": "dist/index.js",
@@ -32,10 +32,10 @@
 		"routing"
 	],
 	"author": "Yige Wang <wyg1776686515@gmail.com>",
-	"homepage": "https://github.com/wangyige0701/koa-use-decorator-route",
+	"homepage": "https://github.com/wangyige0701/koa-use-decorator-router",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/wangyige0701/koa-use-decorator-route.git"
+		"url": "git+https://github.com/wangyige0701/koa-use-decorator-router.git"
 	},
 	"license": "MIT",
 	"devDependencies": {
