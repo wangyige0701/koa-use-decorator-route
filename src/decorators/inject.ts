@@ -18,8 +18,8 @@ export function Inject(constructor?: Function): PropertyDecorator;
  *
  * Inject decorator, used to inject route parameters
  *
- * @param paramName 参数名
- * @param type 参数类型，默认不转换，可以传入 Types 枚举值或自定义转换函数
+ * @param paramName 参数名 / parameter name
+ * @param type 参数类型，默认不转换，可以传入 Types 枚举值或自定义转换函数 / parameter type, can be Types enum value or custom convert function
  */
 export function Inject(paramName: string, type?: InjectType): ParameterDecorator;
 export function Inject(...args: any[]): PropertyDecorator | ParameterDecorator {

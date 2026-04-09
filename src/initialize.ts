@@ -1,4 +1,5 @@
 import type Router from '@koa/router';
+import type { Middleware } from 'koa';
 import type {
 	ControllerMethod,
 	InjectMethodMetadata,
@@ -14,6 +15,8 @@ import {
 	INJECT_METHOD,
 	RESPONSE_GLOBAL_HEADER,
 	RESPONSE_HEADER,
+	ROUTE_MIDDLEWARES,
+	ROUTE_NAME,
 	ROUTE_OVERRIDE,
 	ROUTES,
 	SINGLETON,
@@ -76,7 +79,18 @@ export async function initialize(
 				const method = routeItem.method.toLowerCase() as RouteMethods;
 				const handler = routeItem.handler;
 
-				router[method](path, async (ctx) => {
+				const strParams = [path] as [path: string];
+				if (Reflect.hasMetadata(ROUTE_NAME, controllerClass, handler)) {
+					// 插入路由名称
+					const name = Reflect.getMetadata(ROUTE_NAME, controllerClass, handler) as string;
+					name && strParams.unshift(name);
+				}
+				// 合并自定义中间件
+				const middlewares = [
+					...((Reflect.getMetadata(ROUTE_MIDDLEWARES, controllerClass) || []) as Middleware[]),
+					...((Reflect.getMetadata(ROUTE_MIDDLEWARES, controllerClass, handler) || []) as Middleware[]),
+				];
+				router[method](...strParams, ...middlewares, async (ctx) => {
 					const responseHeaders = (Reflect.getMetadata(RESPONSE_HEADER, controllerClass, handler) ||
 						[]) as ResponseHeaderMetadata[];
 					const responseHeaderGlobal = (Reflect.getMetadata(RESPONSE_GLOBAL_HEADER, controllerClass) ||
