@@ -33,17 +33,17 @@ npm install koa-use-decorator-router
 
 ## 使用 / Usage
 
-> 目录下的控制器文件名必须以 `Controller` 结尾。可以通过 `acceptAnyControllerName` 允许任何控制器文件名
+> 目录下的控制器文件名必须以 `Controller` 结尾。可以通过 `acceptAnyControllerName` 允许任何控制器文件名。
 
 > The controller file name must end with `Controller`. You can allow any controller file name by setting `acceptAnyControllerName: true`
 
-> 目录下的控制器文件必须导出一个被 `@Controller` 装饰器装饰的类
+> 目录下的控制器文件必须导出一个被 `@Controller` 装饰器装饰的类。
 
 > The controller file must export a class decorated with `@Controller`.
 
 - ### 声明 / Declaration
 
-#### ESM Module
+ESM Module
 
 ```ts
 import Koa from 'koa';
@@ -60,7 +60,7 @@ app.use(
 );
 ```
 
-#### CommonJS Module
+CommonJS Module
 
 ```ts
 const Koa = require('koa');
@@ -77,7 +77,7 @@ app.use(
 );
 ```
 
-#### 函数创建中间件 / Create Middleware via Function
+函数创建中间件 / Create Middleware via Function
 
 > 扩展传参方式 / Extended parameter options
 
@@ -97,7 +97,7 @@ const router = new Router();
 app.use(decorator(dir, router)).use(router.allowedMethods());
 ```
 
-#### 构造函数创建中间件 / Create Middleware via Constructor
+构造函数创建中间件 / Create Middleware via Constructor
 
 > `Decorator` 实例可以直接调用 `Router` 实例的方法，内部通过代理模式实现。
 
@@ -132,13 +132,13 @@ app.use(decorator.middleware()).use(decorator.allowedMethods());
 
 - ### 基本声明示例 / Basic Declaration Example
 
-#### 成员函数返回的数据会作为响应体返回
+成员函数返回的数据会作为响应体返回。
 
-#### The return value of the member function will be used as the response body.
+成员函数可以使用 `@Context` 注入 `Koa.Context` 类型的参数。
 
-#### 成员函数可以使用 `@Context` 注入 `Koa.Context` 类型的参数
+The return value of the member function will be used as the response body.
 
-#### The member function can use `@Context` to inject a `Koa.Context` object.
+The member function can use `@Context` to inject a `Koa.Context` object.
 
 ```ts
 import type Koa from 'koa';
@@ -156,13 +156,13 @@ export class HomeController {
 
 - ### 单例 / Singleton
 
-#### 单例装饰器不会修改或重写类的构造函数，而是在内部维护一个单例实例，插件生命周期内会复用该实例。
+单例装饰器不会修改或重写类的构造函数，而是在内部维护一个单例实例，插件生命周期内会复用该实例。
 
-#### The `@Singleton` decorator does not modify or override the class constructor. Instead, it internally manages a single shared instance, which is reused whenever the class is instantiated within the plugin lifecycle.
+非控制器目录下的其它类也可以使用 `@Singleton` 装饰器。
 
-#### 非控制器目录下的其它类也可以使用 `@Singleton` 装饰器
+The `@Singleton` decorator does not modify or override the class constructor. Instead, it internally manages a single shared instance, which is reused whenever the class is instantiated within the plugin lifecycle.
 
-#### Classes outside the controller directory can also use the `@Singleton` decorator.
+Classes outside the controller directory can also use the `@Singleton` decorator.
 
 ```ts
 import { Singleton, Controller, HttpMethod } from 'koa-use-decorator-router';
@@ -189,12 +189,12 @@ export class HomeService {
 
 - ### 参数注入示例 / Parameter Injection Example
 
-#### `@Inject` 装饰器第二个参数可以是一个枚举值，也可以是一个函数
+`@Inject` 装饰器第二个参数可以是一个枚举值，也可以是一个函数。
 
 > - 预定义枚举值（如 `Types.Int`）用于内置类型转换
 > - 自定义函数用于转换参数值
 
-#### `@Inject` decorator second parameter can be an enum value or a function.
+`@Inject` decorator second parameter can be an enum value or a function.
 
 > - a predefined enum (e.g., `Types.Int`) for built-in type conversion
 > - a custom function for transforming the value
@@ -223,13 +223,13 @@ export class HomeController {
 
 - ### 响应头示例 / Response Header Example
 
-#### `@ResponseHeader` 装饰器用于设置响应头，第一个参数是响应头名称，第二个参数是响应头值
+`@ResponseHeader` 装饰器用于设置响应头，第一个参数是响应头名称，第二个参数是响应头值。
 
-#### The `@ResponseHeader` decorator is used to set response headers. The first parameter specifies the header name, and the second parameter specifies the header value.
+提供一个 `@Cross` 装饰器，用于处理跨域请求，可作用于控制器或成员函数上。
 
-#### 提供一个 `@Cross` 装饰器，用于处理跨域请求，可作用于控制器或成员函数上
+The `@ResponseHeader` decorator is used to set response headers. The first parameter specifies the header name, and the second parameter specifies the header value.
 
-#### The `@Cross` decorator enables CORS (Cross-Origin Resource Sharing). It can be applied at the controller or method level.
+The `@Cross` decorator enables CORS (Cross-Origin Resource Sharing). It can be applied at the controller or method level.
 
 ```ts
 import { Controller, HttpMethod, ResponseHeader, Methods, Cross } from 'koa-use-decorator-router';
@@ -253,9 +253,9 @@ export class HomeController {
 
 - ### 条件装饰器 / Conditional Decorator
 
-#### `@IF` 装饰器可以根据条件判断应用不同的装饰器，必须要链式调用 `ENDIF` 结束
+`@IF` 装饰器可以根据条件判断应用不同的装饰器，必须要链式调用 `ENDIF` 结束。
 
-#### The `@IF` decorator allows applying different decorators based on a condition, and must be concluded by chaining a call to `ENDIF`.
+The `@IF` decorator allows applying different decorators based on a condition, and must be concluded by chaining a call to `ENDIF`.
 
 ```ts
 import { Controller, HttpMethod, IF } from 'koa-use-decorator-router';
@@ -274,9 +274,9 @@ export class HomeController {
 
 - ### 成员属性注入 / Property Injection
 
-#### 可以通过传递构造函数给 `@Inject` 装饰器来注入成员属性，或者在 ts 中通过类型反射来注入
+可以通过传递构造函数给 `@Inject` 装饰器来注入成员属性，或者在 ts 中通过类型反射来注入。
 
-#### You can inject member properties by passing the class constructor to the `@Inject` decorator, or by using TypeScript's type reflection.
+You can inject member properties by passing the class constructor to the `@Inject` decorator, or by using TypeScript's type reflection.
 
 ```ts
 // HomeController.ts
@@ -373,7 +373,7 @@ app.use(decorator.middleware()).use(decorator.allowedMethods());
 
 - ### 控制器文件过滤 / Controller File Filter
 
-#### 通过函数创建 / Create a custom filter function
+通过函数创建 / Create a custom filter function
 
 ```ts
 app.use(
@@ -413,7 +413,7 @@ app.use(
 );
 ```
 
-#### 通过构造函数创建 / Create a custom filter function
+通过构造函数创建 / Create a custom filter function
 
 ```ts
 const decorator = new Decorator(dir);
@@ -432,9 +432,9 @@ decorator.matchFileName((val, suffix) => val !== 'SkipController');
 
 - ### 控制器名称限制 / Controller Naming Convention
 
-#### 默认情况下，控制器文件名需要以 `Controller` 结尾。从 `0.2.0` 版本开始，可以通过配置关闭该限制。
+默认情况下，控制器文件名需要以 `Controller` 结尾。从 `0.2.0` 版本开始，可以通过配置关闭该限制。
 
-#### By default, controller file names are expected to end with `Controller`. Starting from version `0.2.0`, this restriction can be disabled via configuration.
+By default, controller file names are expected to end with `Controller`. Starting from version `0.2.0`, this restriction can be disabled via configuration.
 
 ```ts
 app.use(
@@ -447,4 +447,78 @@ app.use(
 // or
 
 app.use(decorator.acceptAnyControllerName().middleware());
+```
+
+- ### 路由中间件 / Route Middleware (>= 1.1.0)
+
+可以使用 `RouteMiddleware` 在类或方法层添加中间件，也可以通过 `createMiddlewareDecorator` 创建可复用的中间件装饰器。
+
+You can use `RouteMiddleware` to add middleware at the class or method level, or you can create a middleware decorator factory using `createMiddlewareDecorator`.
+
+```ts
+import { Controller, HttpMethod, RouteMiddleware, createMiddlewareDecorator } from 'koa-use-decorator-router';
+
+const Test = createMiddlewareDecorator((ctx, next) => {
+	ctx.set('x-test', '1');
+	return next();
+});
+
+@RouteMiddleware((ctx, next) => {
+	ctx.set('x-class', '1');
+	return next();
+})
+@Controller('/mw')
+export class MiddlewareController {
+	@HttpMethod.Get('/class')
+	classRoute() {
+		return 'ok';
+	}
+
+	@RouteMiddleware((ctx, next) => {
+		ctx.set('x-method', '2');
+		return next();
+	})
+	@HttpMethod.Get('/method')
+	methodRoute() {
+		return 'ok2';
+	}
+
+	@Test()
+	@HttpMethod.Get('/test')
+	testRoute() {
+		return 'ok3';
+	}
+}
+```
+
+类级中间件会在方法级中间件之前执行，多个中间件按声明顺序合并。
+
+Class-level middleware will execute before method-level middleware, and multiple middleware will be merged in order of declaration.
+
+- ### 命名路由 / Named Route (>= 1.1.0)
+
+使用 `NamedRoute('name')` 为路由命名；初始化后的 `Decorator` 实例可以通过内部路由的 `url` 方法生成路径。
+
+Use `NamedRoute('name')` to name routes; the initialized `Decorator` instance can generate paths using the internal router's `url` method.
+
+```ts
+import { Controller, HttpMethod, NamedRoute, Inject, Types } from 'koa-use-decorator-router';
+
+@Controller('/named')
+export class NamedRouteController {
+	@NamedRoute('named.detail')
+	@HttpMethod.Get('/detail/:id')
+	detail(@Inject('id', Types.Int) id: number) {
+		return id;
+	}
+}
+```
+
+生成 URL / Generate URL
+
+```ts
+const decorator = new Decorator(dir);
+app.use(decorator.middleware());
+const url = decorator.getRouter().url('named.detail', { id: '123' });
+// => '/named/detail/123'
 ```
