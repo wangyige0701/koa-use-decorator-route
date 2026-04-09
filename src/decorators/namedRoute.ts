@@ -10,7 +10,7 @@ import { ROUTE_NAME } from '@/config';
 export function NamedRoute(name: string): MethodDecorator {
 	return (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
 		if (name) {
-			Reflect.defineMetadata(ROUTE_NAME, name, target, propertyKey);
+			Reflect.defineMetadata(ROUTE_NAME, name, target.constructor, propertyKey);
 		}
 		return descriptor;
 	};
