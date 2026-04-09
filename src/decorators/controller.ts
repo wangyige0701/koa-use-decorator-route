@@ -5,7 +5,7 @@ import { CONTROLLER, ROUTE_OVERRIDE, SINGLETON } from '@/config';
  *
  * Controller decorator
  *
- * @param basePath 控制器基础路径
+ * @param basePath 控制器基础路径 / controller base path
  */
 export function Controller(basePath: string): ClassDecorator {
 	return (target: any) => {
@@ -18,6 +18,8 @@ export function Controller(basePath: string): ClassDecorator {
  * 单例模式装饰器
  *
  * Singleton pattern decorator
+ *
+ * @param params 构造函数参数 / constructor parameters
  */
 export function Singleton(...params: any[]): ClassDecorator {
 	return (target: any) => {

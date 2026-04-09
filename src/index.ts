@@ -7,6 +7,8 @@ export * from '@/decorators/response';
 export * from '@/decorators/controller';
 export * from '@/decorators/inject';
 export * from '@/decorators/if';
+export * from '@/decorators/namedRoute';
+export * from '@/decorators/middleware';
 
 export { Types, Methods } from '@/enum';
 
