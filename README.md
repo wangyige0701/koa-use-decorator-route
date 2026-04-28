@@ -274,9 +274,9 @@ export class HomeController {
 
 - ### 成员属性注入 / Property Injection
 
-可以通过传递构造函数给 `@Inject` 装饰器来注入成员属性，或者在 ts 中通过类型反射来注入。
+可以通过传递构造函数给 `@Inject` 装饰器来注入成员属性，或者在 ts 中通过类型反射来注入。如果使用的 ts 运行时环境不支持实时注入元数据（如 `design:type`），则一定需要在装饰器工厂函数中传入构造函数。
 
-You can inject member properties by passing the class constructor to the `@Inject` decorator, or by using TypeScript's type reflection.
+You can inject member properties by passing the class constructor to the `@Inject` decorator, or by using TypeScript's type reflection. If the TypeScript runtime environment does not support runtime injection of metadata (like `design:type`), you must pass the constructor function to the decorator factory function.
 
 ```ts
 // HomeController.ts
@@ -286,8 +286,8 @@ import { HomeService2, HomeService3 } from '@/service/HomeService';
 
 @Controller('/home')
 export class HomeController {
-	// 如果不用非空断言 (!)，则 `tsconfig.json` 中必须开启 `strictPropertyInitialization`
-	// If you do not use the non-null assertion operator (!), you must enable `strictPropertyInitialization` in `tsconfig.json`.
+	// 如果不用非空断言 (!)，则 `tsconfig.json` 中必须关闭 `strictPropertyInitialization`
+	// If you do not use the non-null assertion operator (!), you must disable `strictPropertyInitialization` in `tsconfig.json`.
 	@Inject()
 	service!: HomeService;
 
