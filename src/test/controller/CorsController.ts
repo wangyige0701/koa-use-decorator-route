@@ -32,3 +32,13 @@ export class CorsController {
 		return 'obj';
 	}
 }
+
+// also include a class-level CORS controller in the same file to avoid extra files
+@Controller('/class-cors')
+@Cors({ origin: 'https://class.example.com', headers: ['X-Class-Header'], methods: [Methods.GET, Methods.POST] })
+export class ClassCorsController {
+	@HttpMethod.Get('/')
+	index() {
+		return 'class';
+	}
+}

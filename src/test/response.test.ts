@@ -11,7 +11,8 @@ describe('Cors / Cross decorators', () => {
 		decorator({
 			controllerDir: path.resolve(path.dirname(fileURLToPath(import.meta.url)), './controller'),
 			allowedMethods: true,
-			matchFileName: 'CorsController',
+			// match any Controller file so new ClassCorsController is loaded as well
+			matchFileName: /Controller$/,
 		}),
 	);
 
@@ -49,5 +50,14 @@ describe('Cors / Cross decorators', () => {
 		expect(res.headers['access-control-allow-origin']).toBe('https://obj.example.com');
 		expect(res.headers['access-control-allow-headers']).toBe('X-Obj-Header');
 		expect(res.headers['access-control-allow-methods']).toBe('GET');
+	});
+
+	it('should set CORS headers for class-level @Cors on ClassCorsController', async () => {
+		const res = await request(app.callback()).get('/class-cors/');
+		expect(res.status).toBe(200);
+		expect(res.text).toBe('class');
+		expect(res.headers['access-control-allow-origin']).toBe('https://class.example.com');
+		expect(res.headers['access-control-allow-headers']).toBe('X-Class-Header');
+		expect(res.headers['access-control-allow-methods']).toBe('GET,POST');
 	});
 });
