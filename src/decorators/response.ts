@@ -64,6 +64,12 @@ export function Cors(
 	headers: string | string[] = defaultHeaders,
 	methods: Methods | Methods[] = defaultMethods,
 ): CorsReturnType {
+	if (Object.prototype.toString.call(origin) === '[object Object]') {
+		const _copy = origin as CorsMetadata;
+		origin = _copy.origin ?? defaultOrigin;
+		headers = _copy.headers ?? defaultHeaders;
+		methods = _copy.methods ?? defaultMethods;
+	}
 	if (typeof origin === 'string') {
 		origin = [origin];
 	}
