@@ -225,17 +225,17 @@ export class HomeController {
 
 `@ResponseHeader` 装饰器用于设置响应头，第一个参数是响应头名称，第二个参数是响应头值。
 
-提供一个 `@Cross` 装饰器，用于处理跨域请求，可作用于控制器或成员函数上。
+同时提供了一个 `@Cors` 装饰器，用于处理跨域请求，可作用于控制器或成员函数上。
 
 The `@ResponseHeader` decorator is used to set response headers. The first parameter specifies the header name, and the second parameter specifies the header value.
 
-The `@Cross` decorator enables CORS (Cross-Origin Resource Sharing). It can be applied at the controller or method level.
+The `@Cors` decorator is also provided to handle CORS (Cross-Origin Resource Sharing). It can be applied at the controller or method level.
 
 ```ts
-import { Controller, HttpMethod, ResponseHeader, Methods, Cross } from 'koa-use-decorator-router';
+import { Controller, HttpMethod, ResponseHeader, Methods, Cors } from 'koa-use-decorator-router';
 
 @Controller('/home')
-@Cross()
+@Cors()
 export class HomeController {
 	@HttpMethod.Get('/')
 	@ResponseHeader('Content-Type', 'text/plain')
@@ -243,10 +243,20 @@ export class HomeController {
 		return 'Hello World!';
 	}
 
-	@HttpMethod.Get('/cross')
-	@Cross('http://localhost:3000', ['Content-Type', 'Authorization'], [Methods.GET])
-	async cross() {
-		return 'Hello Cross!';
+	@HttpMethod.Get('/cors')
+	@Cors('http://localhost:3000', ['Content-Type', 'Authorization'], [Methods.GET])
+	async cors() {
+		return 'Hello Cors!';
+	}
+
+	@HttpMethod.Get('/cors2')
+	@Cors({
+		origin: 'http://localhost:3000',
+		allow: ['Content-Type', 'Authorization'],
+		methods: [Methods.GET],
+	})
+	async cors2() {
+		return 'Hello Cors 2!';
 	}
 }
 ```
