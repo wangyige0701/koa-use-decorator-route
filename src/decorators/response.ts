@@ -1,4 +1,4 @@
-import type { ResponseHeaderMetadata } from '@/@types';
+import type { CorsMetadata, ResponseHeaderMetadata } from '@/@types';
 import { RESPONSE_GLOBAL_HEADER, RESPONSE_HEADER } from '@/config';
 import { Methods } from '@/enum';
 
@@ -35,6 +35,15 @@ export function ResponseHeader(header: string, value: string) {
 	return result;
 }
 
+const defaultOrigin = '*';
+const defaultHeaders = ['Content-Type', 'Authorization'];
+const defaultMethods = [Methods.GET, Methods.POST, Methods.PUT, Methods.DELETE, Methods.OPTIONS];
+
+interface CorsReturnType {
+	(target: any): any;
+	(target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor;
+}
+
 /**
  * 跨域装饰器
  *
@@ -44,11 +53,17 @@ export function ResponseHeader(header: string, value: string) {
  * @param headers 允许的请求头 / Allowed request headers
  * @param methods 允许的请求方法 / Allowed request methods
  */
-export function Cross(
-	origin: string | string[] = '*',
-	headers: string | string[] = ['Content-Type', 'Authorization'],
-	methods: Methods | Methods[] = [Methods.GET, Methods.POST, Methods.PUT, Methods.DELETE, Methods.OPTIONS],
-) {
+export function Cors(metadata: CorsMetadata): CorsReturnType;
+export function Cors(
+	origin?: string | string[],
+	headers?: string | string[],
+	methods?: Methods | Methods[],
+): CorsReturnType;
+export function Cors(
+	origin: CorsMetadata | string | string[] = defaultOrigin,
+	headers: string | string[] = defaultHeaders,
+	methods: Methods | Methods[] = defaultMethods,
+): CorsReturnType {
 	if (typeof origin === 'string') {
 		origin = [origin];
 	}
@@ -85,3 +100,16 @@ export function Cross(
 	}
 	return result;
 }
+
+/**
+ * 跨域装饰器
+ *
+ * Cross origin decorator
+ *
+ * @param origin 允许的来源 / Allowed origin
+ * @param headers 允许的请求头 / Allowed request headers
+ * @param methods 允许的请求方法 / Allowed request methods
+ *
+ * @deprecated 请使用 `Cors` 装饰器代替 / Please use `Cors` decorator instead
+ */
+export const Cross = Cors;

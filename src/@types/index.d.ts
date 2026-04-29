@@ -61,6 +61,12 @@ export interface ResponseHeaderMetadata {
 	value: string;
 }
 
+export interface CorsMetadata {
+	origin: string | string[];
+	headers: string | string[];
+	methods: Methods | Methods[];
+}
+
 export type RouteMethods = Lowercase<keyof typeof Methods>;
 
 export type ExposeMethods = Capitalize<RouteMethods>;
