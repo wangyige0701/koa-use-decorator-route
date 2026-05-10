@@ -37,4 +37,12 @@ describe('Inject', () => {
 		expect(res.text).toBe('inject service 3');
 		expect(res.status).toBe(200);
 	});
+
+	// 新增：验证参数装饰器传入异步转换函数能够生效
+	it('should support async injector function', async () => {
+		const app = getApp();
+		const res = await request(app.callback()).get('/inject/async/5');
+		expect(res.status).toBe(200);
+		expect(res.text).toBe('15');
+	});
 });
