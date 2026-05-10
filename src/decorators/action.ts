@@ -34,7 +34,7 @@ function Action(path: string, method: Methods): MethodDecorator {
 						param = TypeMapFunction[inject.type](param);
 					}
 				} else if (isFunction(inject.type)) {
-					param = inject.type(param);
+					param = await inject.type(param);
 				}
 				injectParams[inject.parameterIndex] = param;
 			}
