@@ -29,4 +29,9 @@ export class InjectController {
 	show3() {
 		return this.service3.show();
 	}
+
+	@HttpMethod.Get('/async/:value')
+	async asyncValue(@Inject('value', async (v: string) => Number(v) + 10) value: number) {
+		return String(value);
+	}
 }
