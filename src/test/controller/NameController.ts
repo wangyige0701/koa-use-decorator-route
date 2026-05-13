@@ -1,8 +1,8 @@
-import { Controller } from '@/decorators/controller';
-import { NamedRoute } from '@/decorators/namedRoute';
-import { HttpMethod } from '@/decorators/action';
-import { Inject } from '@/decorators/inject';
-import { Types } from '@/enum';
+import { Controller } from '@/index';
+import { NamedRoute } from '@/index';
+import { HttpMethod } from '@/index';
+import { Inject } from '@/index';
+import { Types } from '@/index';
 
 @Controller('/named')
 export class NamedRouteController {

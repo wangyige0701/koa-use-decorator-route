@@ -1,7 +1,7 @@
-import { Controller } from '@/decorators/controller';
+import { Controller } from '@/index';
+import { HttpMethod } from '@/index';
+import { Inject } from '@/index';
 import { SingletonService, SingletonService2 } from '../service/SingletonService';
-import { HttpMethod } from '@/decorators/action';
-import { Inject } from '@/decorators/inject';
 
 @Controller('/singleton')
 export class SingletonController {
