@@ -141,8 +141,7 @@ export async function initialize(
 					router.options(
 						path,
 						async (ctx, next) => {
-							const accessMethod = ctx.get(ACCESS_CONTROL_REQUEST_METHOD);
-							if (!accessMethod || !corsConfig.methods.includes(accessMethod)) {
+							if (!ctx.get(ACCESS_CONTROL_REQUEST_METHOD)) {
 								return await next();
 							}
 
