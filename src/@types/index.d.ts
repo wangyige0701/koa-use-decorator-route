@@ -62,9 +62,9 @@ export interface ResponseHeaderMetadata {
 }
 
 export interface CorsMetadata {
-	origin: string | string[];
-	headers: string | string[];
-	methods: Methods | Methods[];
+	origin?: string | string[];
+	headers?: string | string[];
+	methods?: Methods | Methods[];
 	credentials?: boolean;
 	secureContext?: boolean;
 	/** second */
