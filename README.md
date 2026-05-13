@@ -225,38 +225,88 @@ export class HomeController {
 
 `@ResponseHeader` 装饰器用于设置响应头，第一个参数是响应头名称，第二个参数是响应头值。
 
-同时提供了一个 `@Cors` 装饰器，用于处理跨域请求，可作用于控制器或成员函数上。
-
 The `@ResponseHeader` decorator is used to set response headers. The first parameter specifies the header name, and the second parameter specifies the header value.
 
-The `@Cors` decorator is also provided to handle CORS (Cross-Origin Resource Sharing). It can be applied at the controller or method level.
-
 ```ts
-import { Controller, HttpMethod, ResponseHeader, Methods, Cors } from 'koa-use-decorator-router';
+import { Controller, HttpMethod, ResponseHeader, Methods } from 'koa-use-decorator-router';
 
 @Controller('/home')
-@Cors()
 export class HomeController {
 	@HttpMethod.Get('/')
 	@ResponseHeader('Content-Type', 'text/plain')
 	async index() {
 		return 'Hello World!';
 	}
+}
+```
 
-	@HttpMethod.Get('/cors')
-	@Cors('http://localhost:3000', ['Content-Type', 'Authorization'], [Methods.GET])
-	async cors() {
-		return 'Hello Cors!';
+- ### 跨域 / CORS
+
+该库提供一个 `@Cors` 装饰器用于处理跨域（CORS）配置，可作用在控制器类（class-level）或成员方法（method-level）上。
+
+> 装饰器的行为参考并借鉴了 `@koa/cors` 的实现，但本项目会自动为配置了 `@Cors` 的路由创建对应的 `OPTIONS` 预检路由，并返回相应的 CORS 响应头。
+> 如果在成员方法上使用 `@Cors`，则 `Access-Control-Allow-Methods` 将会强制设置为当前路由方法，因此在方法级别传递 `methods` 参数是无效的。
+
+This library provides a `@Cors` decorator for handling Cross-Origin Resource Sharing (CORS) configurations, which can be applied at the controller class level or the individual method level.
+
+> The behavior of this decorator is inspired by the implementation of `@koa/cors`. However, this project automatically creates the corresponding `OPTIONS` preflight route for any route configured with `@Cors` and returns the appropriate CORS response headers.
+> When `@Cors` is applied at the method level, the `Access-Control-Allow-Methods` header is forcibly set to the current route’s method. Therefore, passing a `methods` parameter at the method level has no effect.
+
+参数 / Options
+
+- origin: `Access-Control-Allow-Origin` - default `'*'`
+- methods: `Access-Control-Allow-Methods` - default `['GET','POST','PUT','DELETE','PATCH','HEAD']`
+- headers: `Access-Control-Allow-Headers`
+- credentials: `Access-Control-Allow-Credentials` - default `false`
+- secureContext: `Cross-Origin-Opener/Embedder-Policy` - default `false`
+- maxAge: `Access-Control-Max-Age`
+- privateNetworkAccess: `Access-Control-Allow-Private-Network` - default `false`
+
+示例 / Examples
+
+```ts
+import { Controller, HttpMethod, Cors, Methods } from 'koa-use-decorator-router';
+
+@Controller('/cors')
+@Cors({
+	origin: 'https://example.com',
+	headers: ['Content-Type','Authorization'],
+	methods: [Methods.GET, Methods.POST],
+	credentials: true,
+	maxAge: 3600,
+	secureContext: true,
+	privateNetworkAccess: false,
+})
+export class CorsController { ... }
+
+@Controller('/cors')
+@Cors('*', ['Content-Type','Authorization'], [Methods.GET, Methods.POST])
+export class CorsController { ... }
+
+@Controller('/cors')
+@Cors()
+export class CorsController { ... }
+```
+
+```ts
+@Controller('/cors')
+export class CorsController {
+	@Cors({ origin: '*', headers: ['X-My-Header'], credentials: true })
+	@HttpMethod.Get('/')
+	index() {
+		return 'ok';
 	}
 
-	@HttpMethod.Get('/cors2')
-	@Cors({
-		origin: 'http://localhost:3000',
-		allow: ['Content-Type', 'Authorization'],
-		methods: [Methods.GET],
-	})
-	async cors2() {
-		return 'Hello Cors 2!';
+	@HttpMethod.Get('/index2')
+	@Cors('*', ['Content-Type', 'Authorization'])
+	index2() {
+		return 'ok';
+	}
+
+	@HttpMethod.Get('/index3')
+	@Cors()
+	index3() {
+		return 'ok';
 	}
 }
 ```
