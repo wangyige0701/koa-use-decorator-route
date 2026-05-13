@@ -19,3 +19,9 @@ export const ROUTE_MIDDLEWARES = Symbol.for('koa-decorator-router#route-middlewa
 
 /** 记录路由的名称 */
 export const ROUTE_NAME = Symbol.for('koa-decorator-router#route-name');
+
+/** 记录路由的方法 */
+export const ROUTE_METHOD = Symbol.for('koa-decorator-router#route-method');
+
+/** 记录路由的跨域配置 */
+export const ROUTE_CORS = Symbol.for('koa-decorator-router#route-cors');

@@ -1,7 +1,8 @@
 import type Router from '@koa/router';
-import type { Middleware } from 'koa';
+import type { Middleware, Context } from 'koa';
 import type {
 	ControllerMethod,
+	CorsReflectMetadata,
 	InjectMethodMetadata,
 	MatchDirectory,
 	ResponseHeaderMetadata,
@@ -15,6 +16,7 @@ import {
 	INJECT_METHOD,
 	RESPONSE_GLOBAL_HEADER,
 	RESPONSE_HEADER,
+	ROUTE_CORS,
 	ROUTE_MIDDLEWARES,
 	ROUTE_NAME,
 	ROUTE_OVERRIDE,
@@ -23,6 +25,18 @@ import {
 } from '@/config';
 import { ControllerDirNotExist } from '@/error';
 import { isArray, isFunction, isRegExp, isString } from '@/utils';
+import {
+	ACCESS_CONTROL_ALLOW_CREDENTIALS,
+	ACCESS_CONTROL_ALLOW_HEADERS,
+	ACCESS_CONTROL_ALLOW_METHODS,
+	ACCESS_CONTROL_ALLOW_ORIGIN,
+	ACCESS_CONTROL_ALLOW_PRIVATE_NETWORK,
+	ACCESS_CONTROL_MAX_AGE,
+	ACCESS_CONTROL_REQUEST_HEADERS,
+	ACCESS_CONTROL_REQUEST_METHOD,
+	CROSS_ORIGIN_EMBEDDER_POLICY,
+	CROSS_ORIGIN_OPENER_POLICY,
+} from './headers';
 
 /**
  * 初始化路由
@@ -60,6 +74,7 @@ export async function initialize(
 			if (!isTarget(controllerClass)) {
 				continue;
 			}
+
 			// 一定要包含 Controller 装饰器声明
 			const controllerPath = Reflect.getMetadata(CONTROLLER, controllerClass) as string;
 			if (!isString(controllerPath) || !controllerPath) {
@@ -85,29 +100,80 @@ export async function initialize(
 					const name = Reflect.getMetadata(ROUTE_NAME, controllerClass, handler) as string;
 					name && strParams.unshift(name);
 				}
+
 				// 合并自定义中间件
 				const middlewares = [
 					...((Reflect.getMetadata(ROUTE_MIDDLEWARES, controllerClass) || []) as Middleware[]),
 					...((Reflect.getMetadata(ROUTE_MIDDLEWARES, controllerClass, handler) || []) as Middleware[]),
 				];
-				router[method](...strParams, ...middlewares, async (ctx) => {
-					const responseHeaders = (Reflect.getMetadata(RESPONSE_HEADER, controllerClass, handler) ||
-						[]) as ResponseHeaderMetadata[];
-					const responseHeaderGlobal = (Reflect.getMetadata(RESPONSE_GLOBAL_HEADER, controllerClass) ||
-						[]) as ResponseHeaderMetadata[];
 
-					// 合并全局响应头和方法响应头，去重
-					const _global = responseHeaderGlobal.filter(
-						(item) => !responseHeaders.find((header) => header.header === item.header),
+				// 判断有没有跨域配置
+				const corsConfig = (Reflect.getMetadata(ROUTE_CORS, controllerClass, handler) ||
+					Reflect.getMetadata(ROUTE_CORS, controllerClass)) as CorsReflectMetadata | undefined;
+
+				// 创建路由
+				router[method](
+					...strParams,
+					...middlewares,
+					async (ctx) => {
+						const responseHeaders = (Reflect.getMetadata(RESPONSE_HEADER, controllerClass, handler) ||
+							[]) as ResponseHeaderMetadata[];
+						const responseHeaderGlobal = (Reflect.getMetadata(RESPONSE_GLOBAL_HEADER, controllerClass) ||
+							[]) as ResponseHeaderMetadata[];
+
+						// 合并全局响应头和方法响应头，去重
+						const _global = responseHeaderGlobal.filter(
+							(item) => !responseHeaders.find((header) => header.header === item.header),
+						);
+						for (const header of [..._global, ...responseHeaders]) {
+							ctx.set(header.header, header.value);
+						}
+
+						// 单例判断
+						const instance = toInjectMethodMetadata<any>(controllerClass, getSingleton(controllerClass));
+						ctx.body = await instance[handler].call(instance, ctx);
+					},
+					commonMiddleware(corsConfig),
+				);
+
+				if (corsConfig) {
+					// 跨域路由创建对应的预检请求
+					router.options(
+						path,
+						async (ctx, next) => {
+							const accessMethod = ctx.get(ACCESS_CONTROL_REQUEST_METHOD);
+							if (!accessMethod || !corsConfig.methods.includes(accessMethod)) {
+								return await next();
+							}
+
+							ctx.set(ACCESS_CONTROL_ALLOW_ORIGIN, corsConfig.origin);
+							if (corsConfig.credentials) {
+								ctx.set(ACCESS_CONTROL_ALLOW_CREDENTIALS, 'true');
+							}
+							if (corsConfig.maxAge) {
+								ctx.set(ACCESS_CONTROL_MAX_AGE, corsConfig.maxAge);
+							}
+							if (corsConfig.methods) {
+								ctx.set(ACCESS_CONTROL_ALLOW_METHODS, corsConfig.methods);
+							}
+							if (corsConfig.secureContext) {
+								ctx.set(CROSS_ORIGIN_OPENER_POLICY, 'same-origin');
+								ctx.set(CROSS_ORIGIN_EMBEDDER_POLICY, 'require-corp');
+							}
+							if (corsConfig.privateNetworkAccess) {
+								ctx.set(ACCESS_CONTROL_ALLOW_PRIVATE_NETWORK, 'true');
+							}
+
+							const allowHeaders = corsConfig.headers || ctx.get(ACCESS_CONTROL_REQUEST_HEADERS);
+							if (allowHeaders) {
+								ctx.set(ACCESS_CONTROL_ALLOW_HEADERS, allowHeaders);
+							}
+
+							ctx.status = 204;
+						},
+						commonMiddleware(corsConfig),
 					);
-					for (const header of [..._global, ...responseHeaders]) {
-						ctx.set(header.header, header.value);
-					}
-
-					// 单例判断
-					const instance = toInjectMethodMetadata<any>(controllerClass, getSingleton(controllerClass));
-					ctx.body = await instance[handler].call(instance, ctx);
-				});
+				}
 			}
 		}
 	}
@@ -127,6 +193,22 @@ function getRoutePath(routeItem: ControllerMethod) {
 
 function isTarget(val: any): val is Function {
 	return typeof val === 'object' ? val !== null : typeof val === 'function';
+}
+
+/**
+ * 所有路由的公用中间件
+ */
+function commonMiddleware(corsConfig?: CorsReflectMetadata) {
+	return async (ctx: Context) => {
+		// https://github.com/rs/cors/issues/10
+		ctx.vary('Origin');
+
+		if (corsConfig) {
+			if (corsConfig.credentials && corsConfig.origin === '*') {
+				ctx.set(ACCESS_CONTROL_ALLOW_ORIGIN, ctx.origin);
+			}
+		}
+	};
 }
 
 /**
@@ -177,6 +259,9 @@ function getSingleton(cls: Function & (new (...args: any[]) => any)) {
 	return new cls();
 }
 
+/**
+ * 处理控制器文件的匹配规则
+ */
 function handleMatchRules(match?: MatchDirectory) {
 	return isFunction(match)
 		? match

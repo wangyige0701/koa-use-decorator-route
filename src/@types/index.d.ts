@@ -65,6 +65,22 @@ export interface CorsMetadata {
 	origin: string | string[];
 	headers: string | string[];
 	methods: Methods | Methods[];
+	credentials?: boolean;
+	secureContext?: boolean;
+	/** second */
+	maxAge?: number | string;
+	/** 是否允许私有网络访问, 默认 false */
+	privateNetworkAccess?: boolean;
+}
+
+export interface CorsReflectMetadata {
+	origin: string;
+	headers: string;
+	methods: string;
+	credentials: boolean;
+	secureContext: boolean;
+	maxAge: string;
+	privateNetworkAccess: boolean;
 }
 
 export type RouteMethods = Lowercase<keyof typeof Methods>;
