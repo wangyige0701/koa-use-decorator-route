@@ -1,5 +1,4 @@
-import { HttpMethod } from '@/decorators/action';
-import { Controller } from '@/decorators/controller';
+import { HttpMethod, Controller } from '@/index';
 
 @Controller('/end')
 export class EndController {

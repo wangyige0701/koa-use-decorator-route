@@ -1,8 +1,7 @@
 import type Koa from 'koa';
-import { HttpMethod } from '@/decorators/action';
-import { Controller, ControllerBasePathOverride, Singleton } from '@/decorators/controller';
-import { Context, Inject } from '@/decorators/inject';
-import { ResponseHeader } from '@/decorators/response';
+import { HttpMethod, Controller, ControllerBasePathOverride, Singleton } from '@/index';
+import { Context, Inject } from '@/index';
+import { ResponseHeader } from '@/index';
 import { Types } from '@/enum';
 
 @Singleton()

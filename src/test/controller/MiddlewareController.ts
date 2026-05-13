@@ -1,6 +1,6 @@
-import { Controller } from '@/decorators/controller';
-import { createMiddlewareDecorator, RouteMiddleware } from '@/decorators/middleware';
-import { HttpMethod } from '@/decorators/action';
+import { Controller } from '@/index';
+import { createMiddlewareDecorator, RouteMiddleware } from '@/index';
+import { HttpMethod } from '@/index';
 
 const Test = createMiddlewareDecorator((ctx, next) => {
 	ctx.set('x-test', 'test');

@@ -1,8 +1,7 @@
-import { HttpMethod } from '@/decorators/action';
-import { Controller, Singleton } from '@/decorators/controller';
-import { IF } from '@/decorators/if';
-import { Inject } from '@/decorators/inject';
-import { ResponseHeader } from '@/decorators/response';
+import { HttpMethod, Controller, Singleton } from '@/index';
+import { IF } from '@/index';
+import { Inject } from '@/index';
+import { ResponseHeader } from '@/index';
 
 function add(num: number) {
 	return function (v: string) {
