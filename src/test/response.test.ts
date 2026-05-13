@@ -3,61 +3,45 @@ import request from 'supertest';
 import Koa from 'koa';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { decorator } from '@/index';
+import { decorator } from '@/initialize/function';
 
-describe('Cors / Cross decorators', () => {
-	const app = new Koa();
-	app.use(
-		decorator({
-			controllerDir: path.resolve(path.dirname(fileURLToPath(import.meta.url)), './controller'),
-			allowedMethods: true,
-			// match any Controller file so new ClassCorsController is loaded as well
-			matchFileName: /Controller$/,
-		}),
-	);
+describe('ResponseHeader decorator', () => {
+	const dir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), './controller');
 
-	it('should set default CORS headers from method-level @Cors and method-level @Cross', async () => {
-		const res = await request(app.callback()).get('/cors/');
+	function createApp() {
+		const app = new Koa();
+		app.use(
+			decorator({
+				controllerDir: dir,
+				allowedMethods: true,
+				matchFileName: /ResponseHeaderController/,
+			}),
+		);
+		return app;
+	}
+
+	it('should merge class-level and method-level headers', async () => {
+		const app = createApp();
+		const res = await request(app.callback()).get('/resp/method');
 		expect(res.status).toBe(200);
 		expect(res.text).toBe('ok');
-		expect(res.headers['access-control-allow-origin']).toBe('*');
-		expect(res.headers['access-control-allow-headers']).toBe('Content-Type,Authorization');
-		expect(res.headers['access-control-allow-methods']).toBe('GET,POST,PUT,DELETE,OPTIONS');
+		expect(res.headers['x-global']).toBe('global'); // class-level
+		expect(res.headers['x-method']).toBe('method'); // method-level
 	});
 
-	it('should set default CORS headers from method-level @Cross', async () => {
-		const res = await request(app.callback()).get('/cors/cross');
+	it('method-level header should override class-level header with same name', async () => {
+		const app = createApp();
+		const res = await request(app.callback()).get('/resp/override');
 		expect(res.status).toBe(200);
-		expect(res.text).toBe('ok2');
-		expect(res.headers['access-control-allow-origin']).toBe('*');
-		expect(res.headers['access-control-allow-headers']).toBe('Content-Type,Authorization');
-		expect(res.headers['access-control-allow-methods']).toBe('GET,POST,PUT,DELETE,OPTIONS');
+		expect(res.text).toBe('overridden');
+		expect(res.headers['x-global']).toBe('overridden'); // overridden by method
 	});
 
-	it('should set custom CORS headers when Cors called with parameters', async () => {
-		const res = await request(app.callback()).get('/cors/custom');
+	it('class-level header should be applied to methods without method-level override', async () => {
+		const app = createApp();
+		const res = await request(app.callback()).get('/resp/noglobal');
 		expect(res.status).toBe(200);
-		expect(res.text).toBe('custom');
-		expect(res.headers['access-control-allow-origin']).toBe('https://example.com');
-		expect(res.headers['access-control-allow-headers']).toBe('X-Test-Header,Authorization');
-		expect(res.headers['access-control-allow-methods']).toBe('GET,POST');
-	});
-
-	it('should set custom CORS headers when Cors called with object metadata', async () => {
-		const res = await request(app.callback()).get('/cors/obj');
-		expect(res.status).toBe(200);
-		expect(res.text).toBe('obj');
-		expect(res.headers['access-control-allow-origin']).toBe('https://obj.example.com');
-		expect(res.headers['access-control-allow-headers']).toBe('X-Obj-Header');
-		expect(res.headers['access-control-allow-methods']).toBe('GET');
-	});
-
-	it('should set CORS headers for class-level @Cors on ClassCorsController', async () => {
-		const res = await request(app.callback()).get('/class-cors/');
-		expect(res.status).toBe(200);
-		expect(res.text).toBe('class');
-		expect(res.headers['access-control-allow-origin']).toBe('https://class.example.com');
-		expect(res.headers['access-control-allow-headers']).toBe('X-Class-Header');
-		expect(res.headers['access-control-allow-methods']).toBe('GET,POST');
+		expect(res.text).toBe('noglobal');
+		expect(res.headers['x-global']).toBe('global');
 	});
 });

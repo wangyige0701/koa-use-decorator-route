@@ -68,7 +68,7 @@ export interface CorsMetadata {
 	credentials?: boolean;
 	secureContext?: boolean;
 	/** second */
-	maxAge?: number | string;
+	maxAge?: number;
 	/** 是否允许私有网络访问, 默认 false */
 	privateNetworkAccess?: boolean;
 }
