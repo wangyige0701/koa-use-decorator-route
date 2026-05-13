@@ -1,6 +1,6 @@
 import type Koa from 'koa';
 import type { ControllerMethod, ExposeMethods, InjectMetadata } from '@/@types';
-import { INJECT, ROUTES } from '@/config';
+import { INJECT, ROUTE_METHOD, ROUTES } from '@/config';
 import { Methods, Types } from '@/enum';
 import { isFunction } from '@/utils';
 
@@ -13,6 +13,9 @@ const TypeMapFunction = {
 
 function Action(path: string, method: Methods): MethodDecorator {
 	return (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+		// 记录路由的方法
+		Reflect.defineMetadata(ROUTE_METHOD, method, target.constructor, propertyKey);
+
 		const routes = Reflect.getMetadata(ROUTES, target.constructor) || ([] as ControllerMethod[]);
 
 		const oldValue = descriptor.value;
