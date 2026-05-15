@@ -8,6 +8,7 @@ import type {
 	ResponseHeaderMetadata,
 	RouteMethods,
 } from '@/@types';
+import vary from 'vary';
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -142,19 +143,24 @@ export async function initialize(
 						}
 
 						ctx.set(ACCESS_CONTROL_ALLOW_ORIGIN, corsConfig.origin);
+
 						if (corsConfig.credentials) {
 							ctx.set(ACCESS_CONTROL_ALLOW_CREDENTIALS, 'true');
 						}
+
 						if (corsConfig.maxAge) {
 							ctx.set(ACCESS_CONTROL_MAX_AGE, corsConfig.maxAge);
 						}
+
 						if (corsConfig.methods) {
 							ctx.set(ACCESS_CONTROL_ALLOW_METHODS, corsConfig.methods);
 						}
+
 						if (corsConfig.secureContext) {
 							ctx.set(CROSS_ORIGIN_OPENER_POLICY, 'same-origin');
 							ctx.set(CROSS_ORIGIN_EMBEDDER_POLICY, 'require-corp');
 						}
+
 						if (corsConfig.privateNetworkAccess) {
 							ctx.set(ACCESS_CONTROL_ALLOW_PRIVATE_NETWORK, 'true');
 						}
@@ -204,6 +210,7 @@ function commonPrependMiddleware({
 		// https://github.com/rs/cors/issues/10
 		ctx.vary('Origin');
 
+		const headers = {} as Record<string, string>;
 		if (target && propertyKey) {
 			const responseHeadersTop = (Reflect.getMetadata(RESPONSE_HEADER_TOP, target, propertyKey) ||
 				[]) as ResponseHeaderMetadata[];
@@ -212,16 +219,41 @@ function commonPrependMiddleware({
 
 			for (const header of mergeHeaders(responseHeadersTop, responseHeaderGlobalTop)) {
 				ctx.set(header.header, header.value);
+				headers[header.header] = header.value;
 			}
 		}
 
-		// 先处理一次 `credentials` 配置，防止后续中间件直接抛出请求导致跨域状态不正确
-		handleCredentials(ctx, corsConfig);
+		try {
+			await next();
 
-		await next();
+			/**
+			 * 处理跨域请求的 `credentials` 配置
+			 * - 当 `Access-Control-Allow-Credentials: true` 时，`Access-Control-Allow-Origin` 不能是 `*`
+			 */
+			if (corsConfig) {
+				if (corsConfig.credentials && corsConfig.origin === '*') {
+					ctx.set(ACCESS_CONTROL_ALLOW_ORIGIN, ctx.origin);
+				}
+			}
+		} catch (error: any) {
+			const errHeadersSet = error.headers || {};
+			const varyWithOrigin = vary.append(errHeadersSet.vary || errHeadersSet.Vary || '', 'Origin');
+			delete errHeadersSet.vary;
 
-		// 再处理一次 `credentials` 配置，防止其它中间件修改了 `Access-Control-Allow-Origin`
-		handleCredentials(ctx, corsConfig);
+			error.headers = {
+				...errHeadersSet,
+				...headers,
+				vary: varyWithOrigin,
+			};
+
+			if (corsConfig) {
+				if (corsConfig.credentials && corsConfig.origin === '*') {
+					error.headers[ACCESS_CONTROL_ALLOW_ORIGIN] = ctx.origin;
+				}
+			}
+
+			throw error;
+		}
 	};
 }
 
@@ -234,18 +266,6 @@ function mergeHeaders(headers: ResponseHeaderMetadata[], globalHeaders: Response
 	// 合并全局响应头和方法响应头，去重
 	const _global = globalHeaders.filter((item) => !headers.find((header) => header.header === item.header));
 	return [..._global, ...headers];
-}
-
-/**
- * 处理跨域请求的 `credentials` 配置
- * - 当 `Access-Control-Allow-Credentials: true` 时，`Access-Control-Allow-Origin` 不能是 `*`
- */
-function handleCredentials(ctx: Context, corsConfig?: CorsReflectMetadata) {
-	if (corsConfig) {
-		if (corsConfig.credentials && corsConfig.origin === '*') {
-			ctx.set(ACCESS_CONTROL_ALLOW_ORIGIN, ctx.origin);
-		}
-	}
 }
 
 /**
