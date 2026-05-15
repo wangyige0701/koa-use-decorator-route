@@ -44,6 +44,13 @@ export class CorsController {
 	post() {
 		return 'posted';
 	}
+
+	// method-level with wildcard origin and credentials true to test origin echo
+	@Cors({ origin: '*', credentials: true })
+	@HttpMethod.Get('/credentials')
+	credentials() {
+		return 'cred';
+	}
 }
 
 // also include a class-level CORS controller in the same file to avoid extra files
