@@ -51,6 +51,19 @@ export class CorsController {
 	credentials() {
 		return 'cred';
 	}
+
+	// origin as array
+	@Cors(['https://a.example.com', 'https://b.example.com'])
+	@HttpMethod.Get('/origin-array')
+	originArray() {
+		return 'origin-array';
+	}
+
+	// route without cors to test OPTIONS passthrough
+	@HttpMethod.Get('/nocors')
+	nocors() {
+		return 'nocors';
+	}
 }
 
 // also include a class-level CORS controller in the same file to avoid extra files
