@@ -24,7 +24,7 @@ import {
  *
  * @param header 响应头名称 / Response header name
  * @param value 响应头值 / Response header value
- * @param top 是否优先于路由中间件触发 / Whether to trigger the response header before the route middleware
+ * @param top 是否优先于路由中间件触发，可以确保接口返回此响应头 / Whether to trigger the response header before the route middleware, can ensure the response returns this header first
  */
 export function ResponseHeader(header: string, value: string, top: boolean = false) {
 	function result(target: any): any;
