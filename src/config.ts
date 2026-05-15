@@ -10,7 +10,13 @@ export const INJECT_METHOD = Symbol.for('koa-decorator-router#inject-method');
 
 export const RESPONSE_HEADER = Symbol.for('koa-decorator-router#response-header');
 
+/** 路由响应头优先触发 */
+export const RESPONSE_HEADER_TOP = Symbol.for('koa-decorator-router#response-header#top');
+
 export const RESPONSE_GLOBAL_HEADER = Symbol.for('koa-decorator-router#response-global-header');
+
+/** 全局响应头优先触发 */
+export const RESPONSE_GLOBAL_HEADER_TOP = Symbol.for('koa-decorator-router#response-global-header#top');
 
 export const ROUTE_OVERRIDE = Symbol.for('koa-decorator-router#route-override');
 

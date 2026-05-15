@@ -1,5 +1,12 @@
 import type { CorsMetadata, CorsReflectMetadata, ResponseHeaderMetadata } from '@/@types';
-import { RESPONSE_GLOBAL_HEADER, RESPONSE_HEADER, ROUTE_CORS, ROUTE_METHOD } from '@/config';
+import {
+	RESPONSE_GLOBAL_HEADER,
+	RESPONSE_GLOBAL_HEADER_TOP,
+	RESPONSE_HEADER,
+	RESPONSE_HEADER_TOP,
+	ROUTE_CORS,
+	ROUTE_METHOD,
+} from '@/config';
 import { Methods } from '@/enum';
 import {
 	ACCESS_CONTROL_ALLOW_CREDENTIALS,
@@ -17,8 +24,9 @@ import {
  *
  * @param header 响应头名称 / Response header name
  * @param value 响应头值 / Response header value
+ * @param top 是否优先于路由中间件触发 / Whether to trigger the response header before the route middleware
  */
-export function ResponseHeader(header: string, value: string) {
+export function ResponseHeader(header: string, value: string, top: boolean = false) {
 	function result(target: any): any;
 	function result(target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor;
 	function result(target: any, propertyKey?: string | symbol, descriptor?: PropertyDescriptor) {
@@ -28,15 +36,17 @@ export function ResponseHeader(header: string, value: string) {
 		} as ResponseHeaderMetadata;
 
 		if (propertyKey) {
-			const responseHeader = (Reflect.getMetadata(RESPONSE_HEADER, target.constructor, propertyKey) ||
+			const key = top ? RESPONSE_HEADER_TOP : RESPONSE_HEADER;
+			const responseHeader = (Reflect.getMetadata(key, target.constructor, propertyKey) ||
 				[]) as ResponseHeaderMetadata[];
 			responseHeader.push(data);
-			Reflect.defineMetadata(RESPONSE_HEADER, responseHeader, target.constructor, propertyKey);
+			Reflect.defineMetadata(key, responseHeader, target.constructor, propertyKey);
 			return descriptor;
 		}
-		const responseHeader = (Reflect.getMetadata(RESPONSE_GLOBAL_HEADER, target) || []) as ResponseHeaderMetadata[];
+		const key = top ? RESPONSE_GLOBAL_HEADER_TOP : RESPONSE_GLOBAL_HEADER;
+		const responseHeader = (Reflect.getMetadata(key, target) || []) as ResponseHeaderMetadata[];
 		responseHeader.push(data);
-		Reflect.defineMetadata(RESPONSE_GLOBAL_HEADER, responseHeader, target);
+		Reflect.defineMetadata(key, responseHeader, target);
 
 		return target;
 	}
@@ -113,17 +123,25 @@ export function Cors(
 	}
 
 	const originHeaderValue = Array.isArray(origin) ? origin.join(',') : '*';
-	const originHeader = originHeaderValue ? ResponseHeader(ACCESS_CONTROL_ALLOW_ORIGIN, originHeaderValue) : void 0;
+	const originHeader = originHeaderValue
+		? ResponseHeader(ACCESS_CONTROL_ALLOW_ORIGIN, originHeaderValue, true)
+		: void 0;
 
 	const methodsHeaderValue = Array.isArray(methods) ? methods.join(',') : defaultMethods.join(',');
-	const methodHeader = methodsHeaderValue ? ResponseHeader(ACCESS_CONTROL_ALLOW_METHODS, methodsHeaderValue) : void 0;
+	const methodHeader = methodsHeaderValue
+		? ResponseHeader(ACCESS_CONTROL_ALLOW_METHODS, methodsHeaderValue, true)
+		: void 0;
 
 	const headersHeaderValue = Array.isArray(headers) ? headers.join(',') : '';
-	const headerHeader = headersHeaderValue ? ResponseHeader(ACCESS_CONTROL_ALLOW_HEADERS, headersHeaderValue) : void 0;
+	const headerHeader = headersHeaderValue
+		? ResponseHeader(ACCESS_CONTROL_ALLOW_HEADERS, headersHeaderValue, true)
+		: void 0;
 
-	const credentialsHeader = credentials ? ResponseHeader(ACCESS_CONTROL_ALLOW_CREDENTIALS, 'true') : void 0;
-	const openerPolicyHeader = secureContext ? ResponseHeader(CROSS_ORIGIN_OPENER_POLICY, 'same-origin') : void 0;
-	const embedderPolicyHeader = secureContext ? ResponseHeader(CROSS_ORIGIN_EMBEDDER_POLICY, 'require-corp') : void 0;
+	const credentialsHeader = credentials ? ResponseHeader(ACCESS_CONTROL_ALLOW_CREDENTIALS, 'true', true) : void 0;
+	const openerPolicyHeader = secureContext ? ResponseHeader(CROSS_ORIGIN_OPENER_POLICY, 'same-origin', true) : void 0;
+	const embedderPolicyHeader = secureContext
+		? ResponseHeader(CROSS_ORIGIN_EMBEDDER_POLICY, 'require-corp', true)
+		: void 0;
 
 	function result(target: any): any;
 	function result(target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor;
@@ -137,7 +155,7 @@ export function Cors(
 			// 接口入口位置定义的跨域配置需要根据路由方法来设置
 			const method = Reflect.getMetadata(ROUTE_METHOD, target.constructor, propertyKey);
 			if (method) {
-				ResponseHeader(ACCESS_CONTROL_ALLOW_METHODS, method)(target, propertyKey, descriptor!);
+				ResponseHeader(ACCESS_CONTROL_ALLOW_METHODS, method, true)(target, propertyKey, descriptor!);
 			}
 			// 记录路由的跨域配置
 			Reflect.defineMetadata(
