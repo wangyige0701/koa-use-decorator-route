@@ -4,6 +4,7 @@ import Koa from 'koa';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { decorator } from '@/initialize/function';
+import { ControllerDirNotExist } from '@/error';
 
 describe('Cors / Cross decorators', () => {
 	const dir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), './controller');
@@ -15,7 +16,7 @@ describe('Cors / Cross decorators', () => {
 				controllerDir: dir,
 				allowedMethods: true,
 				// 保证加载测试用的 Controller 文件
-				matchFileName: /Controller$/,
+				matchFileName: /CorsController$/,
 			}),
 		);
 		return app;
@@ -155,5 +156,61 @@ describe('Cors / Cross decorators', () => {
 		expect(res.headers['cross-origin-opener-policy']).toBe('same-origin');
 		expect(res.headers['cross-origin-embedder-policy']).toBe('require-corp');
 		expect(res.headers['access-control-allow-private-network']).toBe('true');
+	});
+
+	it('origin array should be joined and returned as allow-origin', async () => {
+		const app = createApp();
+		const res = await request(app.callback()).get('/cors/origin-array');
+		expect(res.status).toBe(200);
+		expect(res.text).toBe('origin-array');
+		// origin array joined by comma
+		expect(res.headers['access-control-allow-origin']).toBe('https://a.example.com,https://b.example.com');
+	});
+
+	it('OPTIONS without Access-Control-Request-Method should call next (no CORS response)', async () => {
+		const app = createApp();
+		const res = await request(app.callback()).options('/cors/');
+		// no AC-Request-Method -> middleware should call next -> no CORS headers set
+		// depending on router, this will likely be 404 or 405; assert no CORS headers
+		expect(res.headers['access-control-allow-origin']).toBeUndefined();
+	});
+
+	it('OPTIONS to route without CORS should not set CORS headers', async () => {
+		const app = new Koa();
+		app.use(
+			decorator({
+				controllerDir: dir,
+				allowedMethods: false,
+				// 保证加载测试用的 Controller 文件
+				matchFileName: /CorsController$/,
+			}),
+		);
+		const res = await request(app.callback()).options('/cors/nocors');
+		expect(res.status === 404 || res.status === 405).toBeTruthy();
+		expect(res.headers['access-control-allow-origin']).toBeUndefined();
+	});
+
+	it('decorator should throw when controllerDir does not exist', async () => {
+		// use decorator middleware with invalid dir and expect it to throw when middleware runs
+		const app = new Koa();
+		let error = '';
+		app.use(async (ctx, next) => {
+			try {
+				await next();
+			} catch (err: any) {
+				error = err?.message || '';
+				throw err;
+			}
+		}).use(
+			decorator({
+				controllerDir: 'this/path/does/not/exist',
+				allowedMethods: false,
+			}),
+		);
+
+		const res = await request(app.callback()).get('/');
+		expect(error).toEqual(ControllerDirNotExist('this/path/does/not/exist'));
+		// middleware should error; Koa will return 500 for thrown errors
+		expect(res.status).toBe(500);
 	});
 });
