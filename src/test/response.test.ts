@@ -44,4 +44,13 @@ describe('ResponseHeader decorator', () => {
 		expect(res.text).toBe('noglobal');
 		expect(res.headers['x-global']).toBe('global');
 	});
+
+	it('top response header should be set even if route middleware throws', async () => {
+		const app = createApp();
+		const res = await request(app.callback()).get('/resp/throw');
+		// koa will convert thrown status to response
+		expect(res.status).toBe(418);
+		// top header must be present because it is inserted before middleware
+		expect(res.headers['x-top']).toBe('top');
+	});
 });

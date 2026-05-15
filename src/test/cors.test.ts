@@ -111,6 +111,25 @@ describe('Cors / Cross decorators', () => {
 		expect(pre.headers['access-control-allow-private-network']).toBe('true');
 	});
 
+	it('wildcard origin with credentials true should echo request origin on GET and OPTIONS', async () => {
+		const app = createApp();
+
+		const res = await request(app.callback()).get('/cors/credentials').set('Origin', 'https://example-client.com');
+		expect(res.status).toBe(200);
+		expect(res.text).toBe('cred');
+		// since credentials=true and origin='*', initialize will echo the request origin
+		expect(res.headers['access-control-allow-origin']).toBe('https://example-client.com');
+		expect(res.headers['access-control-allow-credentials']).toBe('true');
+
+		const pre = await request(app.callback())
+			.options('/cors/credentials')
+			.set('Origin', 'https://example-client.com')
+			.set('Access-Control-Request-Method', 'GET');
+		expect(pre.status).toBe(204);
+		expect(pre.headers['access-control-allow-origin']).toBe('https://example-client.com');
+		expect(pre.headers['access-control-allow-credentials']).toBe('true');
+	});
+
 	it('class-level Cors should apply to controller root', async () => {
 		const app = createApp();
 		const res = await request(app.callback()).get('/class-cors/');
